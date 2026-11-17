@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legacy Challenge Storm Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f6f5f1; --surface:#fdfdfb; --surface-2:#efeee9; --line:#e2e0d9; --grid:#ebe9e3;
+  --text:#121211; --text-2:#55544f; --muted:#8a8880;
+  --accent:#6250d6; --accent-soft:#ebe8fb;
+  --win:#008300; --loss:#c43a39;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme:dark;
+    --bg:#121211; --surface:#191918; --surface-2:#222220; --line:#2f2f2c; --grid:#262624;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#8d8c84;
+    --accent:#9085e9; --accent-soft:#29254a;
+    --win:#2fb52f; --loss:#e66767;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c; --s7:#9085e9; --s8:#e66767;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#191918; --surface-2:#222220; --line:#2f2f2c; --grid:#262624;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#8d8c84;
+  --accent:#9085e9; --accent-soft:#29254a;
+  --win:#2fb52f; --loss:#e66767;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c; --s7:#9085e9; --s8:#e66767;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px 80px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+input,select,button{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:5px 9px}
+button{cursor:pointer}
+button:hover{border-color:var(--text-2)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.link{border:0;background:none;padding:0;color:var(--accent);font-size:13px}
+
+/* header */
+header.top{position:relative;padding:44px 0 22px;text-align:center}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+h1{font-size:clamp(40px,6vw,60px);line-height:1.02;margin:0;font-weight:800;letter-spacing:-.035em}
+header.top{padding-top:56px!important}
+header.top .sub{margin-top:14px;font-size:15px}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--text-2);margin:10px auto 0;font-size:13.5px;max-width:760px}
+.sub .cuthl{color:var(--accent);font-weight:600}
+.sub .daterange{display:inline-block;margin-top:4px;color:var(--muted)}
+.sub a{color:inherit;text-decoration-color:var(--line);text-underline-offset:3px}
+
+/* filter bar */
+.filters{position:sticky;top:0;z-index:5;margin:0 -28px;padding:12px 28px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px 28px;align-items:center}
+.fgroup{display:flex;align-items:center;gap:10px}
+.flabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.chips{display:inline-flex;flex-wrap:wrap;gap:6px}
+.chip{border-radius:999px;padding:3px 11px 3px 9px;font-size:12.5px;border:1px solid var(--line);background:transparent;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.chip .sw{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.chip[aria-pressed="true"]{color:var(--text);background:var(--surface);border-color:var(--line)}
+.chip .n{color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.all{padding-left:11px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:3px 11px;font-size:12.5px;background:transparent;color:var(--text-2)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
+.filters select{font-size:12.5px;padding:3px 6px;background:transparent}
+@media (max-width:720px){.filters{position:relative}}
+
+.viewsel{font-size:13px!important;font-weight:600;padding:4px 28px 4px 10px!important;background:var(--surface)!important;border-color:var(--line)}
+.view{display:none}
+.view.on{display:block}
+.plist.cols{columns:2;column-gap:48px}
+.plist.cols li{break-inside:avoid}
+@media (max-width:720px){.plist.cols{columns:1}}
+.about-body{margin-top:4px}
+.dd{position:relative}
+.dd-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;padding:4px 10px;background:var(--surface);min-width:180px}
+.dd-btn .sw,.dd-row .sw{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.dd-btn .dots{display:inline-flex;gap:2px}
+.dd-btn .caret{margin-left:auto;color:var(--muted);font-size:11px;padding-left:6px}
+.dd-menu{position:absolute;top:calc(100% + 6px);left:0;z-index:30;min-width:260px;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:6px;box-shadow:0 8px 28px rgba(0,0,0,.14)}
+.dd-row{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:6px;font-size:13px;cursor:pointer}
+.dd-row:hover{background:var(--surface-2)}
+.dd-row input{margin:0;accent-color:var(--accent)}
+.dd-row .nm{flex:1}
+.dd-row .n{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
+.dd-row .only{border:0;background:none;padding:0 2px;font-size:11.5px;color:var(--accent);visibility:hidden}
+.dd-row:hover .only{visibility:visible}
+.dd-all{border-bottom:1px solid var(--grid);border-radius:6px 6px 0 0;margin-bottom:4px;padding-bottom:8px}
+@media (hover:none){.dd-row .only{visibility:visible}}
+.site-foot{margin-top:72px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--text-2);line-height:1.65}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:40px}
+@media (max-width:900px){.foot-grid{grid-template-columns:1fr;gap:20px}}
+.foot-wrap>summary{cursor:pointer;list-style:none;font-size:13px;font-weight:600;color:var(--text-2)}
+.foot-wrap>summary::-webkit-details-marker{display:none}
+.foot-wrap>summary::before{content:"▸";display:inline-block;width:16px;color:var(--muted)}
+.foot-wrap[open]>summary::before{content:"▾"}
+.foot-wrap>.foot-grid{margin-top:16px}
+.site-foot h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;margin:0 0 8px}
+.site-foot p{margin:0}
+.site-foot a{color:var(--text-2);text-underline-offset:3px;text-decoration-color:var(--line)}
+.site-foot details.live{margin-top:20px}
+.site-foot details.live summary{cursor:pointer;color:var(--muted);font-size:12px;list-style:none}
+.site-foot details.live summary::-webkit-details-marker{display:none}
+.site-foot details.live summary::before{content:"▸ "}
+.site-foot details.live[open] summary::before{content:"▾ "}
+.site-foot .live-body{margin-top:10px}
+.site-foot .live-note{margin-top:8px;color:var(--muted);font-size:12px}
+.filters{flex-wrap:nowrap!important}
+.fsummary{display:flex;gap:6px;flex-wrap:wrap;min-width:0;flex:1}
+.fs{font-size:12.5px;color:var(--text-2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 10px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.fs .dots{display:inline-flex;gap:2px}
+.fs .sw{width:7px;height:7px;border-radius:50%;display:inline-block}
+.filters-btn{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:6px 12px;background:var(--surface);flex:none}
+.fcount{background:var(--accent);color:#fff;border-radius:999px;font-size:11px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+.fcount:empty{display:none}
+
+.drawer-back{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(380px,92vw);background:var(--surface);border-left:1px solid var(--line);z-index:41;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(0,0,0,.14)}
+.drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--grid)}
+.drawer-head h2{font-size:16px}
+.drawer-head .x{border:0;background:none;font-size:22px;line-height:1;color:var(--muted);padding:2px 6px}
+.drawer-body{flex:1;overflow:auto;padding:8px 22px 20px}
+.dsec{padding:16px 0;border-bottom:1px solid var(--grid)}
+.dsec:last-child{border-bottom:0}
+.dsec .flabel{display:block;margin-bottom:10px}
+.dsec .months{display:flex;align-items:center;gap:8px;margin-top:10px}
+.dsec .months select{flex:1}
+.vlist{margin:0 -8px}
+.drawer-foot{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;border-top:1px solid var(--grid)}
+.drawer-foot .primary{padding:6px 18px}
+body.noscroll{overflow:hidden}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+.viewname{font-size:14px;font-weight:600;white-space:nowrap}
+.nav-list{padding:10px 12px;display:flex;flex-direction:column;gap:2px;overflow:auto}
+.nav-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:14px 10px 6px}
+.nav-list a,.nav-list button{display:block;text-align:left;width:100%;border:0;background:none;border-radius:8px;padding:9px 10px;font-size:14px;color:var(--text);text-decoration:none;cursor:pointer}
+.nav-list a span{display:block;font-size:12px;color:var(--muted);margin-top:1px}
+.nav-list a:hover,.nav-list button:hover{background:var(--surface-2)}
+.nav-list a.on{background:var(--accent-soft);color:var(--text)}
+.nav-list a.on::before{content:"";float:left;width:3px;height:36px;margin:0 9px 0 -4px;border-radius:2px;background:var(--accent)}
+.drawer{visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s}
+.drawer.open{visibility:visible;transition:transform .22s ease,visibility 0s}
+@media (min-width:1200px){
+  .drawer{transform:none!important;visibility:visible!important;transition:none!important;width:320px;box-shadow:none;background:var(--bg)}
+  .drawer .x,#drawerDone,.filters-btn,.fsummary{display:none!important}
+  .drawer-back{display:none!important}
+  .drawer-head{padding:22px 24px 14px}
+  .drawer-body{padding:0 24px 16px}
+  .drawer-foot{justify-content:flex-start;padding:12px 24px}
+  .filters{justify-content:flex-start}
+}
+.ptabs{display:inline-flex;gap:4px;background:var(--surface-2);border-radius:9px;padding:3px}
+.ptabs button{border:0;background:none;border-radius:7px;padding:5px 14px;font-size:13px;font-weight:600;color:var(--muted)}
+.ptabs button[aria-selected="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ptab .nav-list{padding:14px 0 0;margin:0 -10px}
+.viewname{border:0;background:none;padding:0;font-size:14px;font-weight:600;color:var(--text);cursor:pointer}
+@media (min-width:1200px){.viewname{cursor:default}}
+.vsec .viewsel{width:100%;font-size:14px!important;padding:7px 10px!important}
+.vsec{border-bottom:0!important;padding-bottom:8px!important}
+.dsub{font-size:13px;font-weight:600;color:var(--text);padding:14px 0 0;margin-top:6px;border-top:1px solid var(--line)}
+/* pages */
+body.p-home .only-detail, body.p-home .only-hub, body.p-hub .only-detail, body.p-hub .only-home, body.p-detail .only-home, body.p-detail .only-hub{display:none!important}
+.homelink{color:inherit;text-decoration:none}
+.backlink{color:var(--text-2);text-decoration:none;font-size:13px;white-space:nowrap}
+.backlink:hover{color:var(--accent)}
+.vsep{color:var(--line)}
+.viewname{cursor:default!important}
+body.p-home section.wk{margin-top:20px}
+.wkcrumb{margin-bottom:14px}
+body.p-home section.wk h2{font-size:22px}
+.cta{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px;padding:18px 24px;border-radius:14px;background:var(--accent-soft);color:var(--text);text-decoration:none;transition:transform .2s ease,box-shadow .2s ease}
+.cta b{display:block;font-size:15px}
+.cta small{display:block;color:var(--text-2);font-size:12.5px;margin-top:2px}
+.cta-arrow{font-size:20px;color:var(--accent);transition:transform .2s ease}
+.cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.cta:hover .cta-arrow{transform:translateX(4px)}
+section.hub{margin-top:28px}
+.hubbar{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.hubrange{font-size:13px;color:var(--muted)}
+.hubgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.hcard{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px 18px;color:var(--text);text-decoration:none;min-height:190px;animation:fadeUp .45s cubic-bezier(.2,.7,.2,1) both;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease}
+.hcard:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.08)}
+.hcard .ht{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.hcard h3{margin:0;font-size:16px;font-weight:600}
+.hcard .go{color:var(--muted);font-size:16px;transition:transform .2s ease,color .2s ease}
+.hcard:hover .go{color:var(--accent);transform:translateX(3px)}
+.hcard .hd{color:var(--text-2);font-size:12.5px;margin:4px 0 14px}
+.hcard .hv{margin-top:auto}
+.hcard .big{font-size:30px;font-weight:600;letter-spacing:-.02em;line-height:1.05;font-variant-numeric:tabular-nums}
+.hcard .big small{font-size:13px;font-weight:500;color:var(--text-2);letter-spacing:0;margin-left:6px}
+.hcard .note{font-size:12px;color:var(--muted);margin-top:6px}
+.hspark{display:block;margin-top:10px}
+.hbar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;margin-top:10px}
+.hbar span{display:block;height:100%}
+.hleg{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:12px;color:var(--text-2)}
+.hleg .vdot{margin-right:5px}
+.hrows{list-style:none;margin:0;padding:0}
+.hrows li{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:5px 0;border-top:1px solid var(--grid)}
+.hrows li:first-child{border-top:0}
+.hrows .n{color:var(--text-2);font-variant-numeric:tabular-nums}
+.hcard.home{background:var(--accent-soft);border-color:transparent}
+.wklist li[data-deck]{cursor:pointer;border-radius:6px;transition:background .15s ease}
+.wklist li[data-deck]:hover,.wklist li[data-deck]:focus-visible{background:var(--surface-2);outline:none}
+.wklist li[data-deck]{margin:0 -10px;padding-left:10px;padding-right:10px}
+.wkgo{margin-left:10px;color:var(--muted);font-size:15px;transition:transform .15s ease,color .15s ease;display:inline-block}
+.wklist li[data-deck]:hover .wkgo{color:var(--accent);transform:translateX(2px)}
+.dmodal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:24px}
+.dmodal[hidden],#tiles[hidden]{display:none}
+.dm-back{position:absolute;inset:0;background:rgba(0,0,0,.38);opacity:0;transition:opacity .18s ease}
+.dm-panel{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:16px;width:min(980px,100%);max-height:min(86vh,900px);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.25);opacity:0;transform:translateY(10px) scale(.985);transition:opacity .18s ease,transform .2s cubic-bezier(.2,.7,.2,1)}
+.dmodal.open .dm-back{opacity:1}
+.dmodal.open .dm-panel{opacity:1;transform:none}
+.dm-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:20px 24px 16px;border-bottom:1px solid var(--line)}
+.dm-title{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.dm-title .vdot{width:10px;height:10px}
+.dm-sub{font-size:13px;color:var(--text-2);margin-top:4px}
+.dm-head .x{border:0;background:none;font-size:24px;line-height:1;color:var(--text-2);padding:2px 6px}
+.dm-head .x:hover{color:var(--text)}
+.dm-scroll{overflow:auto;padding:18px 24px 24px}
+@media (max-width:720px){.dmodal{padding:0;align-items:flex-end}.dm-panel{border-radius:16px 16px 0 0;max-height:92vh}}
+@media (prefers-reduced-motion:reduce){.dm-back,.dm-panel{transition:none}}
+.filters{z-index:30!important;flex-wrap:wrap!important}
+.fchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-left:auto}
+.dd{position:relative}
+.ddb{cursor:pointer;font:inherit;font-size:12.5px!important}
+.ddb:hover,.ddb[aria-expanded="true"]{border-color:var(--accent);color:var(--text)}
+.ddb .caret{color:var(--muted);transition:transform .18s ease}
+.ddb[aria-expanded="true"] .caret{transform:rotate(180deg)}
+.ddb.on{background:var(--accent-soft);border-color:transparent;color:var(--text)}
+.ddp{position:absolute;top:calc(100% + 6px);left:0;z-index:40;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 12px 32px rgba(0,0,0,.16);min-width:150px;animation:fadeUp .16s cubic-bezier(.2,.7,.2,1) both}
+.ddp.wide{width:290px;padding:10px}
+.ddp.right{left:auto;right:0}
+.ddp .vlist{margin:0}
+.ddopts{display:flex;flex-direction:column;gap:2px}
+.ddopts button{border:0;background:none;text-align:left;padding:7px 10px 7px 28px;border-radius:7px;font-size:13px;position:relative;color:var(--text)}
+.ddopts button:hover{background:var(--surface-2)}
+.ddopts button[aria-pressed="true"]{font-weight:600}
+.ddopts button[aria-pressed="true"]::before{content:"✓";position:absolute;left:10px;color:var(--accent)}
+#resetBtn{font-size:12.5px;padding:0 4px}
+.fs .dots:empty{display:none}
+@media (max-width:720px){.fchips{margin-left:0;width:100%}.fgroup{width:100%}}
+/* motion */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+header.top h1{animation:fadeUp .55s cubic-bezier(.2,.7,.2,1) both}
+header.top .sub{animation:fadeUp .55s .08s cubic-bezier(.2,.7,.2,1) both}
+.filters{animation:fadeIn .5s .15s both}
+.kpi{animation:fadeUp .5s cubic-bezier(.2,.7,.2,1) both}
+.kpi:nth-child(1){animation-delay:.18s}.kpi:nth-child(2){animation-delay:.24s}.kpi:nth-child(3){animation-delay:.30s}.kpi:nth-child(4){animation-delay:.36s}
+.view.on{animation:fadeUp .4s cubic-bezier(.2,.7,.2,1) both}
+.chart g.bar{transform-box:view-box;animation:grow .6s cubic-bezier(.2,.75,.25,1) both;animation-delay:calc(var(--i) * 28ms)}
+.chart path.ln{stroke-dasharray:1;animation:draw .9s .1s cubic-bezier(.4,0,.2,1) both}
+.chart circle.dot{animation:fadeIn .3s both;animation-delay:calc(.25s + var(--i) * 45ms)}
+tr.detail>td>*{animation:fadeUp .3s cubic-bezier(.2,.7,.2,1) both}
+.plist li,#varTable tbody tr,#deckTable tbody tr.row{animation:fadeIn .35s both}
+.mini{transition:width .45s cubic-bezier(.2,.7,.2,1)}
+button,select,.chip,.fs,.dd-row,table.t td,.plist li,.nav-list a{transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease}
+.filters-btn:hover,.drawer-foot .primary:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.filters-btn,.drawer-foot .primary{transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease}
+.drawer-back{animation:fadeIn .2s both}
+body.noanim *{animation:none!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.wb-sum{margin:4px 0 26px}
+.wbkey{font-size:10.5px;letter-spacing:.04em;white-space:nowrap}
+.wbkey i{display:inline-block;width:9px;height:6px;border-radius:2px;margin:0 4px 0 6px;vertical-align:1px}
+.wbkey .ks{background:var(--text-2);margin-left:0}.wbkey .kp{background:var(--accent)}
+.ko-more{font-size:12.5px;padding:10px 0}
+.wb-line .pill{margin-right:0}
+.wb-big{font-size:14px;color:var(--text-2)}
+.wb-big .big{font-size:34px;font-weight:600;color:var(--text);letter-spacing:-.02em;margin-right:8px;vertical-align:-3px}
+.wb-line{font-size:15px;line-height:1.8;margin-top:8px;max-width:820px}
+table.wb td.wbbar{white-space:nowrap;width:90px}
+.seg-s,.seg-p{display:inline-block;height:8px;vertical-align:middle;transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.seg-s{background:var(--text-2);border-radius:4px 0 0 4px}
+.seg-p{background:var(--accent);border-radius:0 4px 4px 0;margin-left:1px}
+.seg-s:last-child,.seg-s:only-child{border-radius:4px}
+tr.mutrow td{color:var(--muted)}
+.ko{display:flex;flex-direction:column;max-width:620px}
+.ko-row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--grid);font-size:13px;animation:fadeIn .35s both}
+.ko-n{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.ko-who{display:inline-flex;gap:4px;align-items:center}
+.ko-who .vdot{margin:0;cursor:default}
+.insights{margin:6px 0 38px}
+.ins-list{list-style:none;margin:0;padding:0;counter-reset:ins}
+.ins-list li{counter-increment:ins;position:relative;padding:14px 0 14px 34px;border-bottom:1px solid var(--grid);animation:fadeUp .45s cubic-bezier(.2,.7,.2,1) both}
+.ins-list li:nth-child(2){animation-delay:.05s}.ins-list li:nth-child(3){animation-delay:.1s}.ins-list li:nth-child(4){animation-delay:.15s}.ins-list li:nth-child(5){animation-delay:.2s}.ins-list li:nth-child(6){animation-delay:.25s}
+.ins-list li::before{content:counter(ins);position:absolute;left:0;top:15px;width:22px;height:22px;border-radius:50%;background:var(--surface-2);color:var(--text-2);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.ins-s{font-size:15px;line-height:1.7}
+.ins-s .vdot{margin-right:6px}
+.pill{display:inline-block;font-size:12.5px;font-weight:600;padding:1px 9px;border-radius:999px;background:var(--accent-soft);color:var(--text);margin:0 3px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ins-d{font-size:12.5px;color:var(--muted);margin-top:3px}
+.ins{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;animation:fadeUp .45s cubic-bezier(.2,.7,.2,1) both}
+.ins:nth-child(2){animation-delay:.06s}.ins:nth-child(3){animation-delay:.12s}.ins:nth-child(4){animation-delay:.18s}
+.ins-k{font-size:13px;color:var(--text-2)}
+.ins-k b{color:var(--text)}
+.ins-m{font-size:11.5px;color:var(--muted);margin:3px 0 12px}
+.ins-v{font-size:14px}
+.ins-n{margin-top:6px;font-size:12.5px;color:var(--text-2)}
+.ins-n .big{font-size:26px;font-weight:600;color:var(--text);letter-spacing:-.02em;margin-right:4px}
+.ins-n .vs{display:block;color:var(--muted);margin-top:2px}
+.ins-f{font-size:11.5px;color:var(--muted);margin-top:8px}
+.subhead2{font-size:15px;font-weight:600;margin:6px 0 2px}
+.subhead2+.hint{margin-bottom:16px}
+.scrollx{overflow-x:auto;margin-bottom:40px}
+table.heat td.hc{font-family:"IBM Plex Mono",monospace;font-size:12px;border-radius:4px;border-bottom:2px solid var(--bg)}
+table.heat th .vdot{margin-right:6px}
+.mut{color:var(--muted);font-size:11.5px}
+.h0{background:var(--hz)}
+.hp1{background:var(--hp1)}.hp2{background:var(--hp2)}.hp3{background:var(--hp3);color:#fff}
+.hn1{background:var(--hn1)}.hn2{background:var(--hn2)}.hn3{background:var(--hn3);color:#fff}
+.tgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:44px}
+@media (max-width:900px){.tgrid{grid-template-columns:1fr}}
+.spark{display:block}
+tr.acc td{font-weight:600}
+.mom{list-style:none;margin:8px 0 0;padding:0}
+.mom li{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--grid);font-size:13px}
+.mom .num{font-variant-numeric:tabular-nums;color:var(--text-2)}
+.mom .arr{font-size:11px}
+.mom .arr.up{color:var(--hp3)}.mom .arr.down{color:var(--hn3)}.mom .arr.flat{color:var(--muted)}
+.caveat{font-size:12px;color:var(--muted);margin-top:28px;max-width:720px}
+:root{--hz:#f0efec;--hp1:#d6e5f8;--hp2:#9cc2ee;--hp3:#2a78d6;--hn1:#f8dcdb;--hn2:#efa5a4;--hn3:#d83f3e}
+@media (prefers-color-scheme: dark){:root:where(:not([data-theme="light"])){--hz:#383835;--hp1:#1f3350;--hp2:#24508a;--hp3:#3987e5;--hn1:#4a2626;--hn2:#7a3434;--hn3:#e66767}}
+.pchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.pchips:empty{display:none}
+.pchip{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;background:var(--accent-soft);color:var(--text);border-radius:999px;padding:2px 4px 2px 10px}
+.pchip button{border:0;background:none;padding:0 5px;font-size:15px;line-height:1;color:var(--text-2)}
+.psearch{position:relative}
+.psearch input{width:100%;font-size:13px;padding:7px 10px}
+.psug{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:280px;overflow:auto}
+.psug-row{display:flex;justify-content:space-between;width:100%;border:0;background:none;border-radius:6px;padding:7px 9px;font-size:13px;text-align:left}
+.psug-row.act,.psug-row:hover{background:var(--surface-2)}
+.psug-row .n{color:var(--muted);font-variant-numeric:tabular-nums}
+.psug-empty{font-size:12.5px;color:var(--muted);padding:8px 9px}
+.pico{font-size:11px}
+.plink{border:0;background:none;padding:0;font:inherit;color:var(--text);cursor:pointer;text-align:left}
+.plink:hover{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.wknav{display:flex;gap:6px}
+.wknav button{width:30px;height:30px;border:1px solid var(--line);background:var(--surface);border-radius:8px;font-size:17px;line-height:1;color:var(--text-2);cursor:pointer}
+.wknav button:disabled{opacity:.35;cursor:default}
+.wknav button:not(:disabled):hover{border-color:var(--accent);color:var(--accent)}
+.wkcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 24px;animation:fadeUp .45s cubic-bezier(.2,.7,.2,1) both}
+.wkstats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.wkstat{padding:0 20px;border-left:1px solid var(--line)}
+.wkstat:first-child{padding-left:0;border-left:0}
+.wkstat .v{font-size:30px;font-weight:600;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+.wkstat .v small{font-size:15px;font-weight:500;color:var(--text-2);letter-spacing:0}
+.wkstat .k{font-size:12.5px;color:var(--text-2);margin-top:4px}
+.wkstat .cmp{font-size:12px;color:var(--muted);margin-top:3px}
+.wkstat .cmp b{font-weight:600;color:var(--text-2)}
+.wkvars{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 6px}
+.wkvar{display:inline-flex;align-items:center;font-size:12.5px;background:var(--surface-2);border-radius:999px;padding:3px 11px 3px 10px}
+.wkvar .vdot{margin-right:7px}
+.wkvar b{margin-left:6px;font-weight:600}
+.wklist{list-style:none;margin:8px 0 0;padding:0}
+.wklist li{display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:baseline;padding:8px 0;border-top:1px solid var(--grid);font-size:13.5px}
+.wklist li:first-child{border-top:0}
+.wklist .pl{font-weight:600;font-variant-numeric:tabular-nums}
+.wklist li.t8 .pl{color:var(--accent)}
+.wklist .who .vdot{margin-right:7px}
+.wklist .meta{color:var(--muted);font-size:12px;white-space:nowrap}
+.wknew{font-size:10.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:1px 6px;margin-left:7px;letter-spacing:.02em}
+.wkempty{color:var(--muted);font-size:13.5px;padding:6px 0}
+@media (max-width:720px){.wkstats{grid-template-columns:1fr 1fr;row-gap:16px}.wkstat:nth-child(3){padding-left:0;border-left:0}.wklist li{grid-template-columns:52px 1fr}.wklist .meta{grid-column:2}}
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);margin:36px 0 8px}
+.kpi{padding:0 24px;border-left:1px solid var(--line)}
+.kpi:first-child{padding-left:0;border-left:0}
+.kpi .v{font-size:40px;font-weight:600;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums}
+.kpi .k{color:var(--text-2);font-size:13px;margin-top:6px}
+@media (max-width:720px){.kpis{grid-template-columns:repeat(2,1fr);row-gap:22px}.kpi:nth-child(3){padding-left:0;border-left:0}}
+
+/* sections */
+section.sec{margin-top:56px}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+h2{font-size:19px;margin:0;font-weight:600;letter-spacing:-.01em}
+.hint{color:var(--muted);font-size:13px;margin:4px 0 0}
+.subhead{font-size:13px;font-weight:600;color:var(--text-2);margin:28px 0 6px}
+.split{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:48px}
+@media (max-width:900px){.split{grid-template-columns:1fr;gap:56px}}
+
+/* charts */
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:"IBM Plex Sans",sans-serif;font-size:11px;fill:var(--muted)}
+.chart .gl{stroke:var(--grid);stroke-width:1}
+.chart .ax{stroke:var(--line);stroke-width:1}
+.chart .hit{fill:transparent;cursor:default}
+.chart .hit:hover{fill:var(--text);fill-opacity:.045}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--text-2)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:0}
+
+/* tables */
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{text-align:left;font-weight:500;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;padding:0 10px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.t td{padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:middle}
+table.t th:first-child,table.t td:first-child{padding-left:0}
+table.t th:last-child,table.t td:last-child{padding-right:0}
+table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums}
+table.t tr.total td{border-bottom:0;font-weight:600;border-top:1px solid var(--line)}
+.vdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:9px;vertical-align:1px}
+.mini{display:inline-block;height:6px;border-radius:0 3px 3px 0;vertical-align:middle;margin-left:8px;opacity:.9}
+
+/* players */
+.plist{list-style:none;margin:0;padding:0}
+.plist li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--grid);font-size:13px}
+.plist .pos{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
+.plist .nm{display:flex;align-items:center;gap:8px;min-width:0}
+.plist .nm span.name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plist .dots{display:inline-flex;gap:3px}
+.plist .dots i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.plist .stat{font-variant-numeric:tabular-nums;color:var(--text-2);white-space:nowrap}
+.plist .stat b{color:var(--text);font-weight:600}
+.more{margin-top:12px}
+
+/* decklists */
+table.dl tbody tr.row{cursor:pointer}
+table.dl tbody tr.row:hover td{background:var(--surface-2)}
+table.dl tr.row td:first-child{width:18px;color:var(--muted);padding-right:4px}
+tr.open td{background:var(--surface-2)}
+.place{font-family:"IBM Plex Mono",monospace;font-size:11.5px;border-radius:999px;padding:1px 8px;background:var(--surface-2);color:var(--text-2);white-space:nowrap}
+.place.win{background:var(--accent);color:#fff}
+tr.open .place:not(.win){background:var(--surface)}
+tr.detail>td{background:var(--surface-2);padding:6px 20px 22px!important}
+.dgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px}
+@media (max-width:900px){.dgrid{grid-template-columns:1fr}}
+.list{columns:2;column-gap:18px;font-size:12.5px}
+.list .grp{break-inside:avoid;margin-bottom:10px}
+.list .grp b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500;margin-bottom:3px}
+.ln{display:flex;gap:7px}
+.ln .q{font-family:"IBM Plex Mono",monospace;color:var(--text-2);min-width:14px;text-align:right}
+.dh{font-size:12.5px;font-weight:600;margin-bottom:10px}
+.path{display:flex;flex-direction:column;gap:4px;font-size:12.5px}
+.path .m{display:grid;grid-template-columns:30px 16px 1fr auto;gap:6px;align-items:baseline}
+.path .r{font-family:"IBM Plex Mono",monospace;color:var(--muted);font-size:11.5px}
+.path .w{color:var(--win);font-weight:600}
+.path .l{color:var(--loss);font-weight:600}
+.path .po .r{color:var(--text);font-weight:600}
+.path .opp{color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.path .rec{font-family:"IBM Plex Mono",monospace;color:var(--muted);font-size:11.5px}
+.copied{font-size:12px;color:var(--win);margin-left:8px}
+.badge{font-size:10.5px;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--muted);margin-left:7px;white-space:nowrap}
+.dl-more{margin-top:14px;text-align:center}
+
+/* about */
+details.about{margin-top:64px;border-top:1px solid var(--line);padding-top:18px}
+details.about summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--text-2);list-style:none}
+details.about summary::-webkit-details-marker{display:none}
+details.about summary::before{content:"▸";display:inline-block;width:16px;color:var(--muted)}
+details.about[open] summary::before{content:"▾"}
+.about-body{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;margin-top:16px;font-size:12.5px;color:var(--text-2);line-height:1.65}
+@media (max-width:900px){.about-body{grid-template-columns:1fr}}
+.about-body h3{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500;margin:0 0 8px}
+.live-body{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.live-body label{display:flex;gap:6px;align-items:center}
+#status{font-size:12.5px;color:var(--text-2)}
+#status.err{color:var(--loss)}
+.rules{margin:0;padding-left:16px}
+.rules li{margin-bottom:5px}
+.rules i{font-style:normal;border:1px solid var(--line);border-radius:4px;padding:0 4px;font-size:11px;color:var(--muted)}
+footer.fn{margin-top:64px;padding-top:14px;border-top:1px solid var(--grid);font-size:12px;color:var(--muted);line-height:1.6}
+footer.fn a{color:var(--text-2);text-underline-offset:3px;text-decoration-color:var(--line)}
+.empty{color:var(--text-2);padding:24px 0;text-align:center}
+#tip{position:fixed;pointer-events:none;background:var(--text);color:var(--bg);font-size:12px;padding:7px 10px;border-radius:7px;max-width:300px;z-index:20;display:none;line-height:1.45;white-space:pre-line;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1><a href="#explore" class="homelink">Storm at a glance</a></h1>
+    <p class="sub" id="subtitle"></p>
+  </header>
+
+  <nav class="filters only-detail">
+    <div class="fgroup"><a class="backlink" href="#explore" title="All sections">‹ All sections</a><span class="vsep">/</span><span class="viewname" id="viewName">Overview</span></div>
+    <div class="fchips">
+      <div class="dd" id="cutGroup"><button class="fs ddb" aria-haspopup="true" aria-expanded="false"><span id="cutLbl">Top 32</span><svg class="caret" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4l2.5 2.5L7.5 4"/></svg></button>
+        <div class="ddp" hidden><div class="ddopts" id="cutSeg"><button data-c="32" aria-pressed="true">Top 32</button><button data-c="16" aria-pressed="false">Top 16</button><button data-c="8" aria-pressed="false">Top 8</button></div></div></div>
+      <div class="dd"><button class="fs ddb" aria-haspopup="true" aria-expanded="false"><span class="dots" id="varDots"></span><span id="varLbl">All variants</span><svg class="caret" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4l2.5 2.5L7.5 4"/></svg></button>
+        <div class="ddp wide" hidden><div class="vlist" id="variantMenu"></div></div></div>
+      <div class="dd"><button class="fs ddb" aria-haspopup="true" aria-expanded="false"><span id="plLbl">All players</span><svg class="caret" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4l2.5 2.5L7.5 4"/></svg></button>
+        <div class="ddp wide" hidden><div class="pchips" id="pChips"></div><div class="psearch"><input type="search" id="pInput" placeholder="Search players…" autocomplete="off" aria-label="Search players"><div class="psug" id="pSug" hidden></div></div></div></div>
+      <div class="dd" id="grainGroup"><button class="fs ddb" aria-haspopup="true" aria-expanded="false"><span id="grainLbl">By week</span><svg class="caret" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4l2.5 2.5L7.5 4"/></svg></button>
+        <div class="ddp" hidden><div class="ddopts" id="grainSeg"><button data-g="week" aria-pressed="true">By week</button><button data-g="month" aria-pressed="false">By month</button></div></div></div>
+      <button class="link" id="resetBtn" hidden>Reset</button>
+    </div>
+    <div hidden><span id="presetSeg"></span><select id="fromSel"></select><select id="toSel"></select><span id="fSummary"></span><span id="fCount"></span></div>
+  </nav>
+
+
+
+  <div class="kpis only-detail" id="tiles"></div>
+
+  <section class="sec wk only-home">
+    <nav class="wkcrumb"><a class="backlink" href="#explore">‹ All sections</a></nav>
+    <div class="sec-head">
+      <div><h2 id="wkTitle">This week</h2><p class="hint" id="wkHint"></p></div>
+      <div class="wknav"><button id="wkPrev" aria-label="Previous week">‹</button><button id="wkNext" aria-label="Next week">›</button></div>
+    </div>
+    <div class="wkcard" id="wkCard"></div>
+  </section>
+
+  <section class="sec hub only-hub">
+    <div class="hubbar"><span class="seg" id="hubSeg" role="group" aria-label="Period"><button data-p="1">1M</button><button data-p="3" aria-pressed="true">3M</button><button data-p="6">6M</button><button data-p="all">All</button></span><span class="hubrange" id="hubRange"></span></div>
+    <div class="hubgrid" id="hubGrid"></div>
+  </section>
+
+  <section class="sec chart view only-detail" data-view="overview">
+    <div class="sec-head">
+      <div><h2>Over time</h2><p class="hint"><span class="cutl">Top-32</span> finishes per period, stacked by variant. Hover for details.</p></div>
+      <div class="legend" id="legend1"></div>
+    </div>
+    <div id="c1"></div>
+    <div class="subhead">Share of all <span class="cutl2">top-32</span> slots</div>
+    <div id="c2"></div>
+  </section>
+
+  <section class="sec view only-detail" data-view="trends">
+    <div class="sec-head"><div><h2>Who beat Storm</h2></div></div>
+    <div class="wb-sum" id="wbSummary"></div>
+    <div class="scrollx"><table class="t wb" id="wbTable"></table></div>
+    <p class="caveat">Counts of losses, not win rates: only Storm decks that finished in the Top 32 have published lists, so their losses are a biased sample of all Storm matches. “Field” is each archetype's share of labelled Top 32 decks in the same months, for context.</p>
+  </section>
+
+  <section class="sec view only-detail" data-view="variants">
+    <div class="sec-head"><div><h2>By variant</h2><p class="hint">Finishes and where they placed.</p></div></div>
+    <table class="t" id="varTable"></table>
+  </section>
+
+  <section class="sec view only-detail" data-view="players">
+    <div class="sec-head"><div><h2>Players</h2><p class="hint">The pilots with the most Storm Top 8 finishes, and what they play.</p></div></div>
+    <ul class="plist cols" id="pilotTable"></ul>
+    <div class="more" id="pilotMore"></div>
+  </section>
+
+  <section class="sec view only-detail" data-view="decklists">
+    <div class="sec-head">
+      <div><h2>Decklists</h2><p class="hint">Click a row to open the list and its round-by-round path.</p></div>
+      <label style="font-size:12.5px;color:var(--text-2)">Sort&nbsp; <select id="sortSel"><option value="date">Newest first</option><option value="rank">Best finish</option><option value="arch">Variant</option></select></label>
+    </div>
+    <table class="t dl" id="deckTable"></table>
+    <div class="dl-more" id="deckMore"></div>
+  </section>
+
+  <div class="dmodal" id="deckModal" hidden><div class="dm-back" id="dmBack"></div><div class="dm-panel" role="dialog" aria-modal="true" aria-label="Decklist" id="dmBody"></div></div>
+
+  <footer class="site-foot"><details class="foot-wrap">
+    <summary>About the data &amp; sources</summary>
+    <div class="foot-grid">
+      <div><h3>How decks are counted</h3><div id="foot"></div></div>
+      <div><h3>Sources</h3><p id="credits"></p></div>
+    </div>
+    <details class="live">
+      <summary>Load another date range</summary>
+      <div class="live-body">
+        <label>From <input type="date" id="dFrom"></label>
+        <label>To <input type="date" id="dTo"></label>
+        <label>Match <input id="rx" value="storm" size="9" class="mono" title="Case-insensitive regex tested against Videre's archetype name"></label>
+        <button class="primary" id="loadBtn">Load</button>
+        <span id="status"></span>
+      </div>
+      <p class="live-note">Works in the downloaded file only (Videre data, no cross-check).</p>
+    </details>
+  </details></footer>
+</div>
+<div id="tip"></div>
+
+<script>
+const RAW = __DATA__;
+const FIELD = __FIELD__;
+const META = {generated:"2026-11-16T18:00:00Z", window:["2026-01-01","2026-11-16"], rx:"storm"};
+const TYPE_NAMES = {Cr:"Creature",In:"Instant",So:"Sorcery",Ar:"Artifact",En:"Enchantment",Pl:"Planeswalker",La:"Land",Ot:"Other"};
+const TYPE_ORDER = ["Cr","In","So","Ar","En","Pl","La","Ot"];
+const API = "https://api.videreproject.com";
+const SLOT_ORDER = ["The EPIC Storm","Saga Storm","Beseech Storm","ANT","Ruby Storm","The EPIC Gamble","Riddlesmith Combo","Necrodominance Storm"];
+const RIDDLE="Riddlesmith Combo";
+const NECRO="Necrodominance Storm";
+
+let DB; // normalized
+function normalize(raw, meta){
+  const cards = raw.cards;
+  const ev = new Map(raw.events.map(e => [e[0], {id:e[0], date:e[1], name:e[2], players:e[3], rounds:e[4], src:(e[5]==="s"||e[5]==="sheet")?"sheet":"videre"}]));
+  const decks = raw.decks.map((d,i) => ({
+    i, ev:ev.get(d[0]), rank:d[1], player:d[2], variant:d[3], record:d[4],
+    mb:d[5].map(v=>({q:Math.floor(v/1000), n:cards[v%1000][0], t:cards[v%1000][1]})),
+    sb:d[6].map(v=>({q:Math.floor(v/1000), n:cards[v%1000][0], t:cards[v%1000][1]})),
+    matches:d[7].map(m=>({round:m[0], opp:m[1], arch:(typeof m[2]==="number"?(raw.arch||[])[m[2]]:m[2])||"", res:m[3], rec:m[4]})),
+    inferred:d[8]===1, relabel:d[8]===2, note:d[9]||"", src:(d[10]==="s"||d[10]==="sheet")?"sheet":"videre"
+  })).filter(d=>d.ev);
+  // Videre labelled some Saga Storm lists as The EPIC Storm (mostly before May 2026).
+  const SAGA_SIG = ["Infernal Tutor","Urza's Saga","Ad Nauseam"];
+  const hasC=(d,n)=>d.mb.some(c=>c.n===n);
+  const qty=(d,n)=>d.mb.filter(c=>c.n===n).reduce((a,c)=>a+c.q,0);
+  decks.forEach(d=>{
+    if(/necrodominance/i.test(d.variant||"")) d.variant=NECRO;
+    if(/riddlesmith/i.test(d.variant||"")) d.variant=RIDDLE;
+    if(/^killabee$/i.test(d.player) && d.variant!==RIDDLE && hasC(d,"Echo of Eons") && hasC(d,"Lion's Eye Diamond")){ d.videreLabel=d.variant; d.why="Killabee list with Echo of Eons and Lion's Eye Diamond"; d.variant=RIDDLE; return; }
+    if(d.variant!==NECRO && qty(d,"Necrodominance")>=3 && hasC(d,"Beseech the Mirror")){ if(d.variant){ d.videreLabel=d.variant; d.why="runs 3+ Necrodominance and Beseech the Mirror"; } else d.inferred=true; d.variant=NECRO; }
+    else if(d.variant===NECRO){}
+    else if(d.variant!=="ANT" && hasC(d,"Ad Nauseam") && hasC(d,"Past in Flames") && !hasC(d,"Beseech the Mirror")){ d.videreLabel=d.variant; d.variant="ANT"; d.why="runs Ad Nauseam and Past in Flames without Beseech the Mirror"; }
+    else if((d.variant==="The EPIC Storm"||d.variant==="Beseech Storm") && SAGA_SIG.every(n=>hasC(d,n))){ d.videreLabel=d.variant; d.variant="Saga Storm"; d.why="runs Infernal Tutor, Urza's Saga and Ad Nauseam"; }
+  });
+  const variants = [...new Set(decks.map(d=>d.variant))].sort((a,b)=>{
+    const ia=SLOT_ORDER.indexOf(a), ib=SLOT_ORDER.indexOf(b);
+    return (ia<0?99:ia)-(ib<0?99:ib) || a.localeCompare(b); });
+  const color = {}; let k=0; variants.forEach(v=>{ color[v] = v===NECRO ? "var(--s8)" : `var(--s${Math.min(++k,7)})`; });
+  return {events:[...ev.values()], decks, variants, color, meta};
+}
+
+const state = {players:new Set(), cut:32, on:new Set(), grain:"week", from:null, to:null, sort:"date", open:new Set()};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pct = (a,b,d=1) => b ? (100*a/b).toFixed(d)+"%" : "–";
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmtDate(d){ const [y,m,dd]=d.split("-"); return `${+dd} ${MONTHS[+m-1]}`; }
+function fmtDateY(d){ const [y,m,dd]=d.split("-"); return `${+dd} ${MONTHS[+m-1]} ${y}`; }
+function ordn(n){ const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); }
+function placeLabel(r){ return r===1?"1st":r===2?"2nd":r<=4?"Top 4":r<=8?"Top 8":ordn(r); }
+const slotsOf = e => Math.min(state.cut, e.players);
+const cutTxt = () => `top-${state.cut}`;
+function weekStart(d){ const t=new Date(d+"T00:00:00Z"); const wd=(t.getUTCDay()+6)%7; t.setUTCDate(t.getUTCDate()-wd); return t.toISOString().slice(0,10); }
+function bucketOf(d){ return state.grain==="month" ? d.slice(0,7) : weekStart(d); }
+function bucketLabel(b){ if(state.grain==="month"){ const [y,m]=b.split("-"); return MONTHS[+m-1]; } return fmtDate(b); }
+function bucketLong(b){ if(state.grain==="month"){ const [y,m]=b.split("-"); return MONTHS[+m-1]+" "+y; } return "Week of "+fmtDateY(b); }
+
+function allBuckets(){
+  const out=[];
+  if(state.grain==="month"){
+    let [y,m]=state.dFrom.slice(0,7).split("-").map(Number); const [ty,tm]=state.dTo.slice(0,7).split("-").map(Number);
+    while(y<ty||(y===ty&&m<=tm)){ out.push(`${y}-${String(m).padStart(2,"0")}`); m++; if(m>12){m=1;y++;} }
+  } else {
+    let t=new Date(weekStart(state.dFrom)+"T00:00:00Z"); const end=new Date(state.dTo+"T00:00:00Z");
+    while(t<=end){ out.push(t.toISOString().slice(0,10)); t.setUTCDate(t.getUTCDate()+7); }
+  }
+  return out;
+}
+const lastDayOf = ym => new Date(Date.UTC(+ym.slice(0,4), +ym.slice(5,7), 0)).toISOString().slice(0,10);
+function setMonthRange(from,to){ state.from=from; state.to=to; state.dFrom=from+"-01"; state.dTo=lastDayOf(to); }
+function setPreset(p){
+  state.preset=p;
+  document.querySelectorAll("#presetSeg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.p===String(p)));
+  const dates=DB.events.map(e=>e.date).sort(), first=dates[0], last=dates[dates.length-1];
+  if(p==="all"){ setMonthRange(first.slice(0,7), last.slice(0,7)); }
+  else if(p){ const t=new Date(last+"T00:00:00Z"); t.setUTCMonth(t.getUTCMonth()-(+p)); t.setUTCDate(t.getUTCDate()+1);
+    state.dFrom=t.toISOString().slice(0,10); state.dTo=last; state.from=state.dFrom.slice(0,7); state.to=last.slice(0,7); }
+  $("#fromSel").value=state.from; $("#toSel").value=state.to;
+}
+const inPeriod = date => date >= state.dFrom && date <= state.dTo;
+const playerOK = d => !state.players.size || state.players.has(d.player);
+function sel(){ return DB.decks.filter(d => d.rank<=state.cut && state.on.has(d.variant) && inPeriod(d.ev.date) && playerOK(d)); }
+function periodEvents(){ return DB.events.filter(e => inPeriod(e.date)); }
+
+/* ---------- chips & filters ---------- */
+function renderFilters(){
+  const counts={}; DB.decks.filter(d=>d.rank<=state.cut && inPeriod(d.ev.date) && playerOK(d)).forEach(d=>counts[d.variant]=(counts[d.variant]||0)+1);
+  const allOn = DB.variants.every(v=>state.on.has(v));
+  const onList = DB.variants.filter(v=>state.on.has(v));
+  const dot = v => `<span class="sw" style="background:${DB.color[v]}"></span>`;
+  const vTxt = allOn ? "All variants" : !onList.length ? "No variants" : onList.length===1 ? onList[0] : `${onList.length} variants`;
+  const perTxt = state.preset==="all" ? "All of 2026" : state.preset ? `Past ${state.preset} month${state.preset==1?"":"s"}` : `${bucketLongM(state.from)} – ${bucketLongM(state.to)}`;
+  const pl=[...state.players], plTxt = pl.length===1 ? esc(pl[0]) : `${pl.length} players`;
+  $("#cutLbl").textContent=`Top ${state.cut}`; $("#varLbl").textContent=vTxt; $("#varDots").innerHTML=onList.map(dot).join("");
+  $("#plLbl").textContent = pl.length ? (pl.length===1?pl[0]:`${pl.length} players`) : "All players";
+  $("#grainLbl").textContent = state.grain==="week"?"By week":"By month";
+  $("#cutLbl").parentNode.classList.toggle("on", state.cut!==defaultsFor(state.view||"overview").cut); $("#varLbl").parentNode.classList.toggle("on", !allOn); $("#plLbl").parentNode.classList.toggle("on", pl.length>0);
+  $("#resetBtn").hidden = !(state.cut!==defaultsFor(state.view||"overview").cut || !allOn || pl.length || state.grain!=="week");
+  $("#pChips").innerHTML = pl.map(n=>`<span class="pchip">${esc(n)}<button data-rm="${esc(n)}" aria-label="Remove ${esc(n)}">×</button></span>`).join("");
+  $("#pChips").querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{ state.players.delete(b.dataset.rm); renderAll(); });
+  $("#variantMenu").innerHTML = `<label class="dd-row dd-all"><input type="checkbox" data-all="1" ${allOn?"checked":""}><span class="nm">All variants</span><span class="n">${Object.values(counts).reduce((a,b)=>a+b,0)}</span></label>` +
+    DB.variants.map(v=>`<label class="dd-row"><input type="checkbox" data-v="${esc(v)}" ${state.on.has(v)?"checked":""}>${dot(v)}<span class="nm">${esc(v)}</span><span class="n">${counts[v]||0}</span><button class="only" data-only="${esc(v)}" title="Show only ${esc(v)}">only</button></label>`).join("");
+  $("#variantMenu").querySelectorAll("input").forEach(cb=>cb.onchange=()=>{
+    if(cb.dataset.all){ if(cb.checked) DB.variants.forEach(v=>state.on.add(v)); else state.on.clear(); }
+    else { const v=cb.dataset.v; if(cb.checked) state.on.add(v); else state.on.delete(v); }
+    renderAll(); });
+  $("#variantMenu").querySelectorAll(".only").forEach(b=>b.onclick=e=>{ e.preventDefault(); e.stopPropagation(); state.on=new Set([b.dataset.only]); renderAll(); });
+}
+function setupPeriod(){
+  const months=[...new Set(DB.events.map(e=>e.date.slice(0,7)))].sort();
+  const opt = m => `<option value="${m}">${bucketLongM(m)}</option>`;
+  $("#fromSel").innerHTML = months.map(opt).join(""); $("#toSel").innerHTML = months.map(opt).join("");
+  setPreset("3");
+}
+function bucketLongM(m){ const [y,mm]=m.split("-"); return MONTHS[+mm-1]+" "+y; }
+
+/* ---------- this week ---------- */
+const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function weekStart(ds){ const t=new Date(ds+"T00:00:00Z"); const dow=(t.getUTCDay()+6)%7; t.setUTCDate(t.getUTCDate()-dow); return t.toISOString().slice(0,10); }
+function addDays(ds,n){ const t=new Date(ds+"T00:00:00Z"); t.setUTCDate(t.getUTCDate()+n); return t.toISOString().slice(0,10); }
+function renderWeek(){
+  const weeks=[...new Set(DB.events.map(e=>weekStart(e.date)))].sort();
+  if(state.wk==null || state.wk>=weeks.length) state.wk=weeks.length-1;
+  const wi=state.wk, ws=weeks[wi], we=addDays(ws,6);
+  $("#wkPrev").disabled = wi<=0; $("#wkNext").disabled = wi>=weeks.length-1;
+  const inWeek=(ds,a,b)=>ds>=a && ds<=b;
+  const evs=DB.events.filter(e=>inWeek(e.date,ws,we));
+  const pass=()=>true;
+  const decks=DB.decks.filter(x=>pass(x) && inWeek(x.ev.date,ws,we)).sort((a,b)=>a.rank-b.rank||a.ev.date.localeCompare(b.ev.date));
+  const lastDate = evs.length ? evs.map(e=>e.date).sort().pop() : we;
+  const [y1,m1,d1]=ws.split("-"), [y2,m2,d2]=we.split("-");
+  const range = m1===m2 ? `${+d1}–${+d2} ${MONTHS[+m2-1]} ${y2}` : `${+d1} ${MONTHS[+m1-1]} – ${+d2} ${MONTHS[+m2-1]} ${y2}`;
+  const filt="";
+  const latest = wi===weeks.length-1;
+  $("#wkTitle").textContent = latest ? "This week" : `Week of ${+d1} ${MONTHS[+m1-1]}`;
+  $("#wkHint").innerHTML = `${latest?"":range+" · "}${evs.length} Challenge${evs.length===1?"":"s"}${latest?"":" · <a href=\"#\" id=\"wkLatest\">back to this week</a>"}`;
+  const wl=$("#wkLatest"); if(wl) wl.onclick=e=>{ e.preventDefault(); state.wk=weeks.length-1; renderWeek(); };
+  state.wkRange=range; state.wkLatest=latest;
+  if(state.page==="home") $("#subtitle").innerHTML=PAGE_SUB.home();
+  // previous 4 weeks of data
+  const prev=weeks.slice(Math.max(0,wi-4),wi);
+  const pd=prev.map(w=>{ const b=addDays(w,6); return DB.decks.filter(x=>pass(x)&&inWeek(x.ev.date,w,b)); });
+  const avg=(f)=> prev.length ? pd.reduce((a,xs)=>a+xs.filter(f).length,0)/prev.length : null;
+  const n32=decks.length, n8=decks.filter(x=>x.rank<=8).length;
+  const a32=avg(()=>true), a8=avg(x=>x.rank<=8);
+  const cmp=(n,a)=>{ if(a==null) return `<div class="cmp">No earlier weeks to compare</div>`;
+    const diff=n-a, arrow=Math.abs(diff)<0.5?"≈":diff>0?"▲":"▼";
+    return `<div class="cmp">${arrow} vs <b>${a.toFixed(1)}</b>/week over the previous ${prev.length} week${prev.length===1?"":"s"}</div>`; };
+  const best=decks.slice().sort((a,b)=>a.rank-b.rank)[0];
+  const firstSeen={}; DB.decks.slice().sort((a,b)=>a.ev.date.localeCompare(b.ev.date)||b.ev.id-a.ev.id).forEach(x=>{ if(!(x.player in firstSeen)) firstSeen[x.player]=x.i; });
+  const vc={}; decks.forEach(x=>vc[x.variant]=(vc[x.variant]||0)+1);
+  const vlist=DB.variants.filter(v=>vc[v]);
+  const stats=`<div class="wkstats">
+    <div class="wkstat"><div class="v">${n32}</div><div class="k">Top 32 finishes</div>${cmp(n32,a32)}</div>
+    <div class="wkstat"><div class="v">${n8}</div><div class="k">Top 8 finishes</div>${cmp(n8,a8)}</div>
+    <div class="wkstat"><div class="v">${best?placeLabel(best.rank)+` <small>${esc(best.player)}</small>`:"–"}</div><div class="k">Best finish</div>${best?`<div class="cmp">${esc(best.variant)} · ${DAYS[new Date(best.ev.date+"T00:00:00Z").getUTCDay()]} ${fmtDate(best.ev.date)}</div>`:""}</div>
+  </div>`;
+  const vars = vlist.length ? `<div class="wkvars">${vlist.map(v=>`<span class="wkvar"><span class="vdot" style="background:${DB.color[v]}"></span>${esc(v)}<b>${vc[v]}</b></span>`).join("")}</div>` : "";
+  const list = decks.length ? `<ul class="wklist">${decks.map(x=>`<li class="${x.rank<=8?"t8":""}" data-deck="${x.i}" role="button" tabindex="0" aria-label="Open ${esc(x.player)}'s decklist"><span class="pl">${placeLabel(x.rank)}</span><span class="who"><span class="vdot" style="background:${DB.color[x.variant]}" data-tip="${esc(x.variant)}"></span>${esc(x.player)}${firstSeen[x.player]===x.i?`<span class="wknew" title="First Storm Top 32 of 2026 in this data">NEW</span>`:""}</span><span class="meta">${DAYS[new Date(x.ev.date+"T00:00:00Z").getUTCDay()]} ${fmtDate(x.ev.date)} · ${esc(x.ev.name)} · ${x.ev.players}p · ${esc(x.record)}<span class="wkgo">›</span></span></li>`).join("")}</ul>`
+    : `<div class="wkempty">No Storm Top 32 finishes this week${filt?" for your filters":""}.</div>`;
+  const card=$("#wkCard"); card.innerHTML=stats+vars+list;
+  card.querySelectorAll("li[data-deck]").forEach(li=>{ li.onclick=()=>openDeck(+li.dataset.deck); li.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openDeck(+li.dataset.deck); } }; });
+  card.style.animation="none"; void card.offsetWidth; card.style.animation="";
+}
+
+/* ---------- hub ---------- */
+function renderHub(){
+  const hp=String(state.hubPreset||"3"), evDates=DB.events.map(e=>e.date).sort(), lastD=evDates[evDates.length-1];
+  const cut3= hp==="all" ? addDays(evDates[0],-1) : (()=>{ const t=new Date(lastD+"T00:00:00Z"); t.setUTCMonth(t.getUTCMonth()-(+hp)); return t.toISOString().slice(0,10); })();
+  document.querySelectorAll("#hubSeg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.p===String(hp)));
+  $("#hubRange").textContent=`${fmtDate(addDays(cut3,1))} – ${fmtDateY(lastD)}`;
+  const all=DB.decks, t8=all.filter(d=>d.ev.date>cut3);
+  const months=[...new Set(DB.events.map(e=>e.date.slice(0,7)))].sort();
+  // this week
+  const weeks=[...new Set(DB.events.map(e=>weekStart(e.date)))].sort(), ws=weeks[weeks.length-1], we=addDays(ws,6);
+  const wkD=all.filter(d=>d.ev.date>=ws&&d.ev.date<=we);
+  // over time sparkline
+  const wks=weeks.filter(w=>addDays(w,6)>cut3); const months_=wks; const ot8=t8.filter(d=>d.rank<=8); const mc=wks.map(w=>ot8.filter(d=>d.ev.date>=w&&d.ev.date<=addDays(w,6)).length), mx=Math.max(1,...mc), W=260, H=44, bw=W/wks.length;
+  const spark=`<svg class="hspark" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">${mc.map((v,i)=>`<rect x="${(i*bw+1).toFixed(1)}" y="${(H-2-(H-6)*v/mx).toFixed(1)}" width="${(bw-2).toFixed(1)}" height="${((H-6)*v/mx).toFixed(1)}" rx="2" fill="var(--accent)" opacity="${i===wks.length-1?1:.55}"><title>Week of ${fmtDate(wks[i])}: ${v}</title></rect>`).join("")}<line x1="0" x2="${W}" y1="${H-1.5}" y2="${H-1.5}" stroke="var(--line)"/></svg>`;
+  // variants share bar (top 8)
+  const vc={}; t8.forEach(d=>vc[d.variant]=(vc[d.variant]||0)+1);
+  const vs=DB.variants.filter(v=>vc[v]);
+  const bar=`<div class="hbar">${vs.map(v=>`<span style="flex:${vc[v]};background:${DB.color[v]}" data-tip="${esc(v)}: ${vc[v]} finishes"></span>`).join("")}</div><div class="hleg">${vs.slice(0,4).map(v=>`<span><span class="vdot" style="background:${DB.color[v]}"></span>${esc(v)} ${vc[v]}</span>`).join("")}${vs.length>4?`<span>+${vs.length-4} more</span>`:""}</div>`;
+  // players
+  const pc={}; t8.filter(d=>d.rank<=8).forEach(d=>pc[d.player]=(pc[d.player]||0)+1);
+  const tp=Object.entries(pc).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,3);
+  // who beat storm: last 3 months, top 32
+  const isStormA=a=>/storm|epic gamble|ad nauseam tendrils|necrodominance|riddlesmith/i.test(a||"");
+  const lc={}; let lt=0; t8.forEach(d=>d.matches.filter(m=>m.res==="L").forEach(m=>{ lt++; const a=!m.arch?"Unlabelled":isStormA(m.arch)?"Storm (mirror)":m.arch; lc[a]=(lc[a]||0)+1; }));
+  const tl=Object.entries(lc).filter(([a])=>a!=="Unlabelled").sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const withList=t8.filter(d=>d.mb.length), latest=all.map(d=>d.ev.date).sort().pop();
+  const cards=[
+    ["home","This week","The latest week's Storm finishes, compared with the previous 4 weeks.",
+      `<div class="big">${wkD.filter(d=>d.rank<=8).length}<small>Top 8 finishes</small></div><div class="note">${fmtDate(ws)} – ${fmtDateY(we)} · ${wkD.length} in the Top 32</div>`],
+    ["overview","Over time","Storm Top 8 finishes by week, stacked by variant, and Storm's share of Top 8 slots.",
+      `<div class="big">${t8.filter(d=>d.rank<=8).length}<small>Top 8 finishes</small></div>${spark}<div class="note">By week</div>`],
+    ["trends","Who beat Storm","The archetypes Storm lost to, against how much of the field they made up.",
+      tl.length?`<ul class="hrows">${tl.map(([a,n])=>`<li><span>${esc(a)}</span><span class="n">${Math.round(100*n/lt)}% of losses</span></li>`).join("")}</ul><div class="note">Share of losses by Top 32 decks</div>`:`<div class="note">No match data</div>`],
+    ["variants","By variant","How each Storm variant has placed: wins, Top 4s, Top 8s and beyond.",
+      `<div class="big">${vs.length}<small>variants in the Top 32</small></div>${bar}`],
+    ["players","Players","The pilots with the most Storm Top 8 finishes, and what they play.",
+      `<ul class="hrows">${tp.map(([n,c],i)=>`<li><span>${i+1}. ${esc(n)}</span><span class="n">${c} Top 8${c===1?"":"s"}</span></li>`).join("")}</ul>`],
+    ["decklists","Decklists","Every list with its round-by-round path. Copy any list for MTGO.",
+      `<div class="big">${withList.length}<small>Top 32 lists</small></div><div class="note">Latest from ${fmtDateY(latest)}</div>`]
+  ];
+  $("#hubGrid").innerHTML=cards.map(([r,t,d,v],i)=>`<a class="hcard${r==="home"?" home":""}" href="#${r==="home"?"week":r}" style="animation-delay:${i*45}ms"><div class="ht"><h3>${t}</h3><span class="go">→</span></div><p class="hd">${d}</p><div class="hv">${v}</div></a>`).join("");
+}
+
+/* ---------- tiles ---------- */
+function renderTiles(){
+  const d=sel(), evs=periodEvents();
+  const slots=evs.reduce((a,e)=>a+slotsOf(e),0), wins=d.filter(x=>x.rank===1).length;
+  const pilots=new Set(d.map(x=>x.player)).size;
+  $("#tiles").innerHTML=[
+    [d.length,`${cutTxt()} finishes in ${evs.length} Challenges`],
+    [pct(d.length,slots),`of all ${slots.toLocaleString()} ${cutTxt()} slots`],
+    [wins,`Challenge win${wins===1?"":"s"}`],
+    [pilots,`different pilot${pilots===1?"":"s"}`]
+  ].map(([v,k])=>`<div class="kpi"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+  document.querySelectorAll("#tiles .v").forEach((el,idx)=>countUp(el, (state.prevKpi||[])[idx]));
+  state.prevKpi=[...document.querySelectorAll("#tiles .v")].map(el=>el.dataset.target);
+}
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function countUp(el, from){
+  const txt=el.textContent, m=txt.match(/^([\d.,]+)(%?)$/); if(!m){ return; }
+  const target=parseFloat(m[1].replace(/,/g,"")), dec=(m[1].split(".")[1]||"").length, suf=m[2];
+  el.dataset.target=target;
+  const start = from!=null ? +from : 0;
+  if(reduceMotion || start===target) return;
+  const t0=performance.now(), dur=550;
+  const step=now=>{ const p=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-p,3), v=start+(target-start)*e;
+    el.textContent=(dec?v.toFixed(dec):Math.round(v).toLocaleString())+suf; if(p<1) requestAnimationFrame(step); else el.textContent=txt; };
+  el.textContent=(dec?start.toFixed(dec):Math.round(start).toLocaleString())+suf; requestAnimationFrame(step);
+}
+
+/* ---------- charts ---------- */
+function dims(el,h){ const w=Math.max(320, el.clientWidth||700); return {w,h,ml:34,mr:4,mt:10,mb:26}; }
+function niceMax(v){ if(v<=4) return 4; const p=Math.pow(10,Math.floor(Math.log10(v))); for(const s of [1,2,2.5,5,10]) if(s*p>=v) return s*p; return 10*p; }
+function yTicks(max,n=4){ const out=[]; for(let i=0;i<=n;i++) out.push(max*i/n); return out; }
+function xLabelEvery(n,w){ const room=w/ n; return room>34?1:room>18?2:room>9?4:8; }
+
+function chartStack(){
+  const el=$("#c1"), B=allBuckets(), d=sel(), vs=DB.variants.filter(v=>state.on.has(v));
+  const evB={}; periodEvents().forEach(e=>{const b=bucketOf(e.date); evB[b]=(evB[b]||0)+1;});
+  const cnt=B.map(b=>{ const o={}; vs.forEach(v=>o[v]=0); d.forEach(x=>{ if(bucketOf(x.ev.date)===b) o[x.variant]++; }); return o; });
+  const tot=cnt.map(o=>Object.values(o).reduce((a,b)=>a+b,0));
+  const D=dims(el, 260), max=niceMax(Math.max(1,...tot));
+  const pw=D.w-D.ml-D.mr, ph=D.h-D.mt-D.mb, bw=pw/B.length, barW=Math.max(3,Math.min(46,bw*0.62));
+  const y=v=>D.mt+ph-ph*v/max;
+  let s=`<svg viewBox="0 0 ${D.w} ${D.h}" role="img" aria-label="Storm ${cutTxt()} finishes per ${state.grain}">`;
+  const tk = max<=8 ? Array.from({length:max/ (max>4?2:1)+1},(_,i)=>i*(max>4?2:1)) : yTicks(max);
+  tk.forEach(t=>{ s+=`<line class="gl" x1="${D.ml}" x2="${D.w-D.mr}" y1="${y(t)}" y2="${y(t)}"/><text x="${D.ml-8}" y="${y(t)+4}" text-anchor="end">${t}</text>`; });
+  const every=xLabelEvery(B.length,pw);
+  B.forEach((b,i)=>{
+    const cx=D.ml+bw*i+bw/2; let acc=0; const segs=vs.filter(v=>cnt[i][v]>0);
+    s+=`<g class="bar" style="--i:${i};transform-origin:${cx}px ${y(0)}px">`;
+    segs.forEach((v,k)=>{ const n=cnt[i][v]; const y0=y(acc), y1=y(acc+n); acc+=n;
+      const top=k===segs.length-1, h=Math.max(0,y0-y1-(top?0:2));
+      s+= top ? `<path d="${roundTop(cx-barW/2,y1,barW,h,Math.min(4,barW/2,h))}" fill="${DB.color[v]}"/>` : `<rect x="${cx-barW/2}" y="${y1+2}" width="${barW}" height="${h}" fill="${DB.color[v]}"/>`; });
+    s+=`</g>`;
+    if(i%every===0) s+=`<text x="${cx}" y="${D.h-8}" text-anchor="middle">${bucketLabel(b)}</text>`;
+    const lines=[bucketLong(b), `${tot[i]} ${cutTxt()} finish${tot[i]===1?"":"es"} · ${evB[b]||0} Challenges`].concat(segs.map(v=>`${v}: ${cnt[i][v]}`));
+    s+=`<rect class="hit" x="${D.ml+bw*i}" y="${D.mt}" width="${bw}" height="${ph}" data-tip="${esc(lines.join("\n"))}"/>`;
+  });
+  s+=`<line class="ax" x1="${D.ml}" x2="${D.w-D.mr}" y1="${y(0)}" y2="${y(0)}"/></svg>`;
+  el.innerHTML=s;
+  $("#legend1").innerHTML = vs.map(v=>`<span><i style="background:${DB.color[v]}"></i>${esc(v)}</span>`).join("");
+}
+function roundTop(x,y,w,h,r){ if(h<=0) return ""; r=Math.max(0,Math.min(r,h)); return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`; }
+
+function chartLine(elId, series, opts){
+  const el=$(elId), B=series.map(p=>p.b), D=dims(el,opts.h||150);
+  const pw=D.w-D.ml-D.mr, ph=D.h-D.mt-D.mb, bw=pw/B.length;
+  const max=opts.max(series), y=v=>D.mt+ph-ph*v/max, x=i=>D.ml+bw*i+bw/2;
+  let s=`<svg viewBox="0 0 ${D.w} ${D.h}" role="img" aria-label="${esc(opts.label)}">`;
+  opts.ticks(max).forEach(t=>{ s+=`<line class="gl" x1="${D.ml}" x2="${D.w-D.mr}" y1="${y(t)}" y2="${y(t)}"/><text x="${D.ml-8}" y="${y(t)+4}" text-anchor="end">${opts.fmt(t)}</text>`; });
+  if(opts.ref!=null) s+=`<line x1="${D.ml}" x2="${D.w-D.mr}" y1="${y(opts.ref)}" y2="${y(opts.ref)}" stroke="var(--muted)" stroke-dasharray="4 4" stroke-width="1"/>`;
+  // path with gaps where value null
+  let dstr="", pen=false;
+  series.forEach((p,i)=>{ if(p.v==null){ pen=false; return; } dstr+=(pen?"L":"M")+x(i)+","+y(p.v); pen=true; });
+  s+=`<path class="ln" pathLength="1" d="${dstr}" fill="none" stroke="var(--text)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  series.forEach((p,i)=>{ if(p.v!=null) s+=`<circle class="dot" style="--i:${i}" cx="${x(i)}" cy="${y(p.v)}" r="${B.length>30?3:4}" fill="var(--text)" stroke="var(--surface)" stroke-width="2"/>`; });
+  const every=xLabelEvery(B.length,pw);
+  B.forEach((b,i)=>{ if(i%every===0) s+=`<text x="${x(i)}" y="${D.h-8}" text-anchor="middle">${bucketLabel(b)}</text>`;
+    s+=`<rect class="hit" x="${D.ml+bw*i}" y="${D.mt}" width="${bw}" height="${ph}" data-tip="${esc(series[i].tip)}"/>`; });
+  s+=`<line class="ax" x1="${D.ml}" x2="${D.w-D.mr}" y1="${D.mt+ph}" y2="${D.mt+ph}"/></svg>`;
+  el.innerHTML=s;
+}
+function chartsSecondary(){
+  const B=allBuckets(), d=sel();
+  const slB={}; periodEvents().forEach(e=>{const b=bucketOf(e.date); slB[b]=(slB[b]||0)+slotsOf(e);});
+  const share=B.map(b=>{ const n=d.filter(x=>bucketOf(x.ev.date)===b).length, slots=slB[b]||0;
+    return {b, v: slots? 100*n/slots : null, tip:`${bucketLong(b)}\n${n} of ${slots} ${cutTxt()} slots${slots?" ("+(100*n/slots).toFixed(1)+"%)":""}`}; });
+  chartLine("#c2", share, {label:"Share of slots", fmt:t=>t+"%",
+    max:s=>{ const m=Math.max(5,...s.map(p=>p.v||0)); return Math.ceil(m/5)*5; },
+    ticks:m=>{ const st=m<=10?2.5:m<=20?5:10; const o=[]; for(let t=0;t<=m+1e-9;t+=st) o.push(+t.toFixed(1)); return o; }});
+}
+
+/* ---------- tables ---------- */
+function renderVariantTable(){
+  const d=sel(), evs=periodEvents(), slots=evs.reduce((a,e)=>a+slotsOf(e),0);
+  const vs=DB.variants.filter(v=>state.on.has(v));
+  const rows=vs.map(v=>{ const x=d.filter(k=>k.variant===v);
+    return {v,n:x.length,first:x.filter(k=>k.rank===1).length,second:x.filter(k=>k.rank===2).length,t4:x.filter(k=>k.rank>=3&&k.rank<=4).length,t8:x.filter(k=>k.rank>=5&&k.rank<=8).length,t16:x.filter(k=>k.rank>=9&&k.rank<=16).length,t32:x.filter(k=>k.rank>=17).length,
+      pilots:new Set(x.map(k=>k.player)).size, last:x.map(k=>k.ev.date).sort().pop()}; }).filter(r=>r.n);
+  if(!rows.length){ $("#varTable").innerHTML=`<tr><td class="empty">No finishes in this selection.</td></tr>`; return; }
+  const tot=rows.reduce((a,r)=>{ for(const k of ["n","first","second","t4","t8","t16","t32"]) a[k]=(a[k]||0)+r[k]; return a; },{v:"All selected"}); tot.pilots=new Set(d.map(k=>k.player)).size;
+  const mx=Math.max(...rows.map(r=>r.n));
+  const line=(r,isTot)=>`<tr${isTot?' class="total"':""}><td>${isTot?"":`<span class="vdot" style="background:${DB.color[r.v]}"></span>`}${esc(r.v)}</td><td class="num" style="white-space:nowrap">${r.n}${isTot?`<span class="mini" style="width:40px"></span>`:`<span class="mini" style="width:${Math.max(2,40*r.n/mx)}px;background:${DB.color[r.v]}"></span><span class="mini" style="width:${40-Math.max(2,40*r.n/mx)}px;margin-left:0"></span>`}</td><td class="num">${pct(r.n,slots)}</td><td class="num">${r.first}</td><td class="num">${r.second}</td><td class="num">${r.t4}</td><td class="num">${r.t8}</td>${state.cut>=16?`<td class="num">${r.t16}</td>`:""}${state.cut>=32?`<td class="num">${r.t32}</td>`:""}</tr>`;
+  $("#varTable").innerHTML=`<thead><tr><th>Variant</th><th class="num">Finishes</th><th class="num">Share</th><th class="num">1st</th><th class="num">2nd</th><th class="num">3–4</th><th class="num">5–8</th>${state.cut>=16?`<th class="num">9–16</th>`:""}${state.cut>=32?`<th class="num">17–32</th>`:""}</tr></thead><tbody>`+
+    rows.map(r=>line(r)).join("")+(rows.length>1?line(tot,true):"")+"</tbody>";
+}
+function renderPilots(){
+  const p={}; DB.decks.filter(d=>d.rank<=8 && state.on.has(d.variant) && inPeriod(d.ev.date) && playerOK(d)).forEach(d=>{ const o=p[d.player]=p[d.player]||{n:0,wins:0,vs:new Set()}; o.n++; if(d.rank===1)o.wins++; o.vs.add(d.variant); });
+  const rows=Object.entries(p).sort((a,b)=>b[1].n-a[1].n||b[1].wins-a[1].wins||a[0].localeCompare(b[0]));
+  const shown = state.allPilots ? rows : rows.slice(0,20);
+  $("#pilotTable").innerHTML = rows.length ? shown.map(([n,o],k)=>`<li><span class="pos">${k+1}</span><span class="nm"><button class="name plink" data-p="${esc(n)}" title="Filter to ${esc(n)}">${esc(n)}</button><span class="dots">${[...o.vs].map(v=>`<i style="background:${DB.color[v]}" title="${esc(v)}"></i>`).join("")}</span></span><span class="stat"><b>${o.n}</b> Top 8${o.n===1?"":"s"}${o.wins?` · ${o.wins} win${o.wins===1?"":"s"}`:""}</span></li>`).join("")
+    : `<li class="empty">No pilots.</li>`;
+  $("#pilotMore").innerHTML = rows.length>20 ? `<button class="link" id="pm">${state.allPilots?"Show top 20":`Show all ${rows.length}`}</button>` : "";
+  const pm=$("#pm"); if(pm) pm.onclick=()=>{ state.allPilots=!state.allPilots; renderPilots(); };
+  document.querySelectorAll("#pilotTable .plink").forEach(b=>b.onclick=()=>{ state.players=new Set([b.dataset.p]); renderAll(); });
+}
+
+/* ---------- trends ---------- */
+const pctS = (v,d=1) => (100*v).toFixed(d)+"%";
+const ppS = v => Math.abs(100*v)<0.05 ? "0.0 pp" : (v>0?"+":"−")+Math.abs(100*v).toFixed(1)+" pp";
+function trendMonths(){
+  const f=state.dFrom.slice(0,7), t=state.dTo.slice(0,7);
+  return FIELD.months.filter(m=>m[0]>=f && m[0]<=t);
+}
+const monLbl=m=>MONTHS[+m.slice(5,7)-1];
+function renderTrends(){
+  const d=sel().filter(x=>x.matches.length);
+  const isStormA=a=>/storm|epic gamble|ad nauseam tendrils|necrodominance|riddlesmith/i.test(a||"");
+  const norm=a=>!a?"Unlabelled":isStormA(a)?"Storm (mirror)":a;
+  const ms=trendMonths(), mIdx=Object.fromEntries(ms.map((m,i)=>[m[0],i]));
+  const L={}; let total=0, played=0;
+  d.forEach(x=>x.matches.forEach(m=>{ played++; if(m.res!=="L") return; total++;
+    const a=norm(m.arch), o=L[a]=L[a]||{a,n:0,swiss:0,po:0,mon:ms.map(()=>0),last:""};
+    o.n++; if(m.round>x.ev.rounds) o.po++; else o.swiss++;
+    const k=mIdx[x.ev.date.slice(0,7)]; if(k!=null) o.mon[k]++;
+    if(x.ev.date>o.last) o.last=x.ev.date; }));
+  if(!total){ $("#wbSummary").innerHTML=`<div class="empty">No losses recorded for this selection.</div>`; $("#wbTable").innerHTML=""; return; }
+  // field share (labelled Top 32) over the same months
+  const t32=a=>a?a[0]+a[1]+a[2]:0;
+  const labTot=ms.reduce((s,m)=>s+Object.entries(m[2]).filter(([k])=>k!=="U").reduce((a,[,v])=>a+t32(v),0),0);
+  const fShare=a=>{ const i=FIELD.arch.indexOf(a); if(i<0||!labTot) return null; return ms.reduce((s,m)=>s+t32(m[2][String(i)]),0)/labTot; };
+  const unl=(L["Unlabelled"]||{n:0}).n;
+  const rows=Object.values(L).filter(r=>r.a!=="Unlabelled").sort((x,y)=>y.n-x.n||x.a.localeCompare(y.a));
+  const named=rows.filter(r=>r.a!=="Unlabelled");
+  // summary sentence
+  const t3=named.slice(0,3);
+  const over=named.filter(r=>r.n>=10).map(r=>({...r,f:fShare(r.a)})).filter(r=>r.f!=null&&r.f>=0.02&&r.n/total>=r.f*1.4&&r.n/total-r.f>=0.02).sort((a,b)=>(b.n/total-b.f)-(a.n/total-a.f))[0];
+  $("#wbSummary").innerHTML=`<div class="wb-big"><span class="big">${total}</span> losses in ${played} matches played by ${d.length} Storm deck${d.length===1?"":"s"}</div>
+    <div class="wb-line">Most often beaten by ${t3.map(r=>`<b>${esc(r.a)}</b> <span class="pill">${pctS(r.n/total,0)}</span>`).join(", ")}.${over?` <b>${esc(over.a)}</b> took ${pctS(over.n/total,0)} of Storm's losses while making up ${pctS(over.f,0)} of the Top 32 field.`:""}${unl?` <span class="mut">${unl} loss${unl===1?"":"es"} (${pctS(unl/total,0)}) ${unl===1?"was":"were"} to opponents Videre didn't label.</span>`:""}</div>`;
+  // table
+  const show=rows.slice(0,14), mx=Math.max(...show.map(r=>r.n));
+  const gmx=Math.max(1,...show.flatMap(r=>r.mon));
+  const spark=vals=>{ const W=110,H=24,mxv=gmx; const bw=(W-4)/vals.length;
+    return `<svg class="spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${vals.map((v,i)=>`<rect x="${(2+i*bw+1).toFixed(1)}" y="${(H-1-(H-3)*v/mxv).toFixed(1)}" width="${Math.max(1,bw-2).toFixed(1)}" height="${((H-3)*v/mxv).toFixed(1)}" rx="1" fill="var(--text-2)" opacity="${v?0.85:0}"><title>${monLbl(ms[i][0])}: ${v}</title></rect>`).join("")}<line x1="2" x2="${W-2}" y1="${H-0.5}" y2="${H-0.5}" stroke="var(--line)"/></svg>`; };
+  $("#wbTable").innerHTML=`<thead><tr><th>Opponent</th><th class="num">Losses</th><th><span class="wbkey"><i class="ks"></i>Swiss <i class="kp"></i>Top 8</span></th><th class="num">Of losses</th><th class="num">Field</th><th>${ms.length?`${monLbl(ms[0][0])} – ${monLbl(ms[ms.length-1][0])}`:"By month"}</th><th class="num">Latest</th></tr></thead><tbody>`+
+    show.map(r=>{ const f=r.a==="Unlabelled"||r.a==="Storm (mirror)"?null:fShare(r.a);
+      return `<tr${r.a==="Unlabelled"?' class="mutrow"':""}><td>${esc(r.a)}</td><td class="num"><b>${r.n}</b></td>
+      <td class="wbbar"><span class="seg-s" style="width:${70*r.swiss/mx}px" data-tip="${r.swiss} in Swiss"></span><span class="seg-p" style="width:${70*r.po/mx}px" data-tip="${r.po} in the Top 8 playoffs"></span></td>
+      <td class="num">${pctS(r.n/total,0)}</td><td class="num mut">${f==null?"–":pctS(f,0)}</td><td>${ms.length>1?spark(r.mon):""}</td><td class="num mut">${fmtDate(r.last)}</td></tr>`; }).join("")+
+    (rows.length>show.length?`<tr class="mutrow"><td colspan="7">+ ${rows.length-show.length} other archetypes (${rows.slice(14).reduce((a,r)=>a+r.n,0)} losses)${unl?` · ${unl} to unlabelled opponents`:""}</td></tr>`:"")+`</tbody>`;
+}
+
+/* ---------- decklists ---------- */
+function groups(cards){
+  const out=[];
+  for(const t of TYPE_ORDER){ const g=cards.filter(c=>(c.t||"Ot")===t).sort((a,b)=>b.q-a.q||a.n.localeCompare(b.n)); if(!g.length) continue;
+    const nm = t==="So" ? "Sorceries" : TYPE_NAMES[t]+(t==="Ot"?"":"s");
+    out.push(`<div class="grp"><b>${nm} (${g.reduce((s,c)=>s+c.q,0)})</b>${g.map(c=>`<div class="ln"><span class="q">${c.q}</span><span>${esc(c.n)}</span></div>`).join("")}</div>`); }
+  return out.join("");
+}
+function deckBody(x,pfx){
+  if(!x.mb.length) return `<span style="color:var(--text-2)">${x.src==="sheet"?"No decklist: this Challenge isn't in Videre. Result from the Legacy Data Collection Project.":"No decklist published for this finish."}</span>`;
+  const sbN=x.sb.reduce((a,c)=>a+c.q,0);
+  const path=x.matches.map(m=>{ const po=m.round>x.ev.rounds;
+    return `<div class="m${po?" po":""}"><span class="r">${po?"T8":"R"+m.round}</span><span class="${m.res==="W"?"w":m.res==="L"?"l":""}">${m.res}</span><span class="opp" title="${esc(m.opp||"")}">${esc(m.arch||"Unlabelled")} <span style="color:var(--muted)">· ${esc(m.opp||"–")}</span></span><span class="rec">${esc(m.rec)}</span></div>`; }).join("");
+  return `<div class="dgrid">
+    <div><div class="dh">Main deck (${x.mb.reduce((a,c)=>a+c.q,0)})</div><div class="list">${groups(x.mb)}</div></div>
+    <div><div class="dh">Sideboard (${sbN})</div><div class="list">${groups(x.sb)}</div>
+      <div style="margin-top:10px"><button data-copy="${x.i}" data-pfx="${pfx}">Copy MTGO list</button><span class="copied" id="${pfx}${x.i}"></span></div></div>
+    <div><div class="dh">Match path</div><div class="path">${path||'<span style="color:var(--muted)">No match data</span>'}</div></div>
+  </div>`;
+}
+function bindCopy(root){
+  root.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async e=>{ e.stopPropagation();
+    const x=DB.decks[+b.dataset.copy]; const txt=x.mb.map(c=>`${c.q} ${c.n}`).join("\n")+"\n\n"+x.sb.map(c=>`${c.q} ${c.n}`).join("\n");
+    const el=$("#"+b.dataset.pfx+b.dataset.copy); try{ await navigator.clipboard.writeText(txt); el.textContent="Copied"; }catch(_){ el.textContent="Clipboard blocked here"; }
+    setTimeout(()=>el.textContent="",2000); });
+}
+function openDeck(i){
+  const x=DB.decks[i], m=$("#deckModal");
+  $("#dmBody").innerHTML=`<div class="dm-head">
+      <div><div class="dm-title"><span class="vdot" style="background:${DB.color[x.variant]}"></span>${esc(x.player)}</div>
+      <div class="dm-sub"><span class="place ${x.rank===1?"win":""}">${placeLabel(x.rank)}</span> · ${esc(x.variant)} · ${fmtDateY(x.ev.date)} · ${esc(x.ev.name)} · ${x.ev.players}p · ${esc(x.record)}</div></div>
+      <button class="x" id="dmClose" aria-label="Close decklist">×</button></div>
+    <div class="dm-scroll">${deckBody(x,"mcp")}</div>`;
+  bindCopy($("#dmBody"));
+  $("#dmClose").onclick=closeDeck;
+  state.lastFocus=document.activeElement;
+  m.hidden=false; requestAnimationFrame(()=>m.classList.add("open"));
+  document.body.classList.add("noscroll"); setTimeout(()=>$("#dmClose").focus(),30);
+}
+function closeDeck(){ const m=$("#deckModal"); if(m.hidden) return; m.classList.remove("open"); document.body.classList.remove("noscroll"); setTimeout(()=>{ m.hidden=true; },180); if(state.lastFocus) state.lastFocus.focus(); }
+function renderDecks(){
+  const s=state.sort;
+  const d=sel().sort((a,b)=> s==="rank" ? a.rank-b.rank || b.ev.date.localeCompare(a.ev.date)
+    : s==="arch" ? a.variant.localeCompare(b.variant) || b.ev.date.localeCompare(a.ev.date)
+    : b.ev.date.localeCompare(a.ev.date) || a.rank-b.rank);
+  if(!d.length){ $("#deckTable").innerHTML=`<tr><td class="empty">No decks in this selection.</td></tr>`; return; }
+  let h=`<thead><tr><th></th><th>Date</th><th>Event</th><th>Player</th><th>Variant</th><th>Finish</th><th class="num">Record</th></tr></thead><tbody>`;
+  const lim = state.deckLimit || 20;
+  for(const x of d.slice(0,lim)){
+    const open=state.open.has(x.i);
+    h+=`<tr class="row${open?" open":""}" data-i="${x.i}"><td>${open?"▾":"▸"}</td><td>${fmtDateY(x.ev.date)}</td><td>${esc(x.ev.name)} <span style="color:var(--muted)">· ${x.ev.players}p</span></td><td>${esc(x.player)}</td><td><span class="vdot" style="background:${DB.color[x.variant]}"></span>${esc(x.variant)}${x.inferred?'<span class="badge" title="Unlabelled in Videre; classified from the decklist">inferred</span>':""}${x.videreLabel?`<span class="badge" title="Was ${esc(x.videreLabel)}. Moved to ${esc(x.variant)}: ${esc(x.why)}">reclassified</span>`:""}${x.relabel?`<span class="badge" title="${esc(x.note)}">relabelled</span>`:""}${x.src==="sheet"?`<span class="badge" title="${esc(x.note)}">sheet only</span>`:""}</td><td><span class="place ${x.rank===1?"win":""}">${placeLabel(x.rank)}</span></td><td class="num mono">${x.record}</td></tr>`;
+    if(open) h+=`<tr class="detail"><td colspan="7">${deckBody(x,"cp")}</td></tr>`;
+  }
+  $("#deckTable").innerHTML=h+"</tbody>";
+  $("#deckMore").innerHTML = d.length>lim ? `<button id="dm">Show ${Math.min(20,d.length-lim)} more · ${d.length-lim} left</button>` : (d.length>20 ? `<button class="link" id="dl">Collapse</button>` : "");
+  const dm=$("#dm"); if(dm) dm.onclick=()=>{ state.deckLimit=lim+20; renderDecks(); };
+  const dl=$("#dl"); if(dl) dl.onclick=()=>{ state.deckLimit=20; renderDecks(); };
+  document.querySelectorAll("#deckTable tr.row").forEach(r=>r.onclick=()=>{ const i=+r.dataset.i; state.open.has(i)?state.open.delete(i):state.open.add(i); renderDecks(); });
+  bindCopy($("#deckTable"));
+}
+
+function renderAll(){
+  document.querySelectorAll(".cutl").forEach(e=>e.textContent=`Top-${state.cut}`); document.querySelectorAll(".cutl2").forEach(e=>e.textContent=cutTxt());
+  const evs=DB.events;
+  const pe=periodEvents().map(e=>e.date).sort(); const first=pe[0]||state.dFrom, last=pe[pe.length-1]||state.dTo;
+  const nSheet=evs.filter(e=>e.src==="sheet").length;
+  if(state.page==="detail") $("#subtitle").innerHTML=`<span class="daterange">${fmtDate(first)} – ${fmtDateY(last)}</span>`;
+  renderFilters(); renderTiles(); renderWeek(); chartStack(); chartsSecondary(); renderVariantTable(); renderPilots(); renderTrends(); renderDecks();
+  $("#foot").innerHTML=`<ul class="rules">
+    <li><b>Storm</b> = Videre archetypes containing “${esc(DB.meta.rx)}”, plus The EPIC Gamble, ANT, Riddlesmith Combo and Necrodominance Storm. Doomsday and Oops! All Spells aren’t counted.</li>
+    <li><b>Saga Storm</b> includes EPIC or Beseech lists running Infernal Tutor, Urza’s Saga and Ad Nauseam. <b>ANT</b> includes any list running Ad Nauseam and Past in Flames without Beseech the Mirror. <b>Necrodominance Storm</b> is Videre’s “Necrodominance Combo” plus any list with 3+ Necrodominance and Beseech the Mirror; Storm lists running a single Necrodominance keep their variant. <b>Riddlesmith Combo</b> is Videre’s “Riddlesmith Combo” plus any Killabee list with Echo of Eons and Lion’s Eye Diamond. All marked <i>reclassified</i> when the label changed.</li>
+    <li><i>inferred</i>: unlabelled in Videre, classified from the list. <i>relabelled</i>: Storm per the cross-check source.${nSheet?` <i>sheet only</i>: from a Challenge Videre lacks; no decklist.`:""}</li>
+    ${nSheet?`<li>${nSheet} Challenges missing from Videre were added from the cross-check and count toward slots.</li>`:""}
+  </ul>`;
+  $("#credits").innerHTML=`Decklists, standings and matches from <a href="https://videreproject.com" target="_blank" rel="noopener">the Videre Project</a>${nSheet?`, cross-checked against the <a href="https://docs.google.com/spreadsheets/d/1SpqXHRdLz7qkdBmzB4bm0jTrn0LjZRF5N4R7gMJmV_g/edit" target="_blank" rel="noopener">Legacy Data Collection Project</a> (<a href="https://discord.gg/frG2n4p6e9" target="_blank" rel="noopener">Discord</a>). Thanks to both communities for collecting this data`:""}. Updated ${new Date(DB.meta.generated).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})}.`;
+}
+
+/* ---------- live loading ---------- */
+async function getJSON(path){ for(let t=0;;t++){ try{ const r=await fetch(API+path); if(!r.ok) throw new Error(path+" → "+r.status); return await r.json(); }catch(e){ if(t>=2 || (e.message||"").includes("→ 4")) throw e; await new Promise(r=>setTimeout(r,800)); } } }
+async function getAll(path){ let out=[], off=0; for(;;){ const j=await getJSON(path+(path.includes("?")?"&":"?")+"limit=100&offset="+off); out=out.concat(j.data||[]); if(!j.meta||!j.meta.has_more) break; off=j.meta.next_offset; } return out; }
+async function pool(items,n,fn){ const res=[]; let i=0; await Promise.all(Array.from({length:n},async()=>{ while(i<items.length){ const k=i++; try{ res[k]=await fn(items[k]); }catch(e){ res[k]=null; } } })); return res; }
+const CLS = l => { for(const [k,c] of [["Land","La"],["Creature","Cr"],["Planeswalker","Pl"],["Instant","In"],["Sorcery","So"],["Artifact","Ar"],["Enchantment","En"]]) if((l||"").includes(k)) return c; return "Ot"; };
+async function loadLive(){
+  const from=$("#dFrom").value, to=$("#dTo").value, rxs=$("#rx").value.trim()||"storm", st=$("#status"); st.className="";
+  let rx; try{ rx=new RegExp(rxs,"i"); }catch(e){ st.className="err"; st.textContent="Invalid pattern"; return; }
+  if(!from||!to||from>to){ st.className="err"; st.textContent="Pick a valid date range"; return; }
+  $("#loadBtn").disabled=true;
+  try{
+    st.textContent="Fetching events…";
+    const maxD=new Date(new Date(to+"T00:00:00Z").getTime()+86400000).toISOString().slice(0,10);
+    const evs=(await getAll(`/events?format=legacy&kind=challenge&min_date=${from}&max_date=${maxD}`)).filter(e=>/challenge/i.test(e.name));
+    let done=0;
+    const stds=await pool(evs,5,async e=>{ const j=await getJSON(`/standings?format=legacy&event_id=${e.id}&limit=32`); st.textContent=`Standings ${++done}/${evs.length}`; return j.data||[]; });
+    const picks=[]; evs.forEach((e,i)=>(stds[i]||[]).filter(s=>s.rank<=32&&(rx.test(s.archetype||"")||/necrodominance|riddlesmith/i.test(s.archetype||"")||/^killabee$/i.test(s.player))).forEach(s=>picks.push({e,s})));
+    done=0;
+    const got=await pool(picks,4,async({e,s})=>{
+      const [dl,ml]=await Promise.all([getJSON(`/decks?format=legacy&event_id=${e.id}&player=${encodeURIComponent(s.player)}&limit=10`), getJSON(`/matches?format=legacy&event_id=${e.id}&player=${encodeURIComponent(s.player)}&limit=50`)]);
+      st.textContent=`Decks ${++done}/${picks.length}`;
+      return {e,s,d:(dl.data||[]).find(x=>x.id===s.deck_id)||(dl.data||[])[0], m:(ml.data||[]).filter(x=>x.player===s.player).sort((a,b)=>a.round-b.round)}; });
+    const ok=got.filter(g=>g&&g.d);
+    const known=new Map(RAW.cards.map(c=>[c[0],c[1]]));
+    const names=[...new Set(ok.flatMap(g=>[...g.d.mainboard,...g.d.sideboard].map(c=>c.name)))];
+    const unknown=names.filter(n=>!known.has(n));
+    if(unknown.length){ st.textContent=`Looking up ${unknown.length} card types…`;
+      await pool(unknown,5,async n=>{ try{ const j=await getJSON(`/cards/named?exact=${encodeURIComponent(n)}`); const c=Array.isArray(j.data)?j.data[0]:(j.data||j); known.set(n,CLS(c.type_line)); }catch(e){ known.set(n,"Ot"); } }); }
+    const cards=names.map(n=>[n,known.get(n)||"Ot"]), idx=new Map(names.map((n,i)=>[n,i]));
+    const pack=list=>{ const m=new Map(); list.forEach(c=>m.set(c.name,(m.get(c.name)||0)+c.quantity)); return [...m].map(([n,q])=>q*1000+idx.get(n)); };
+    const raw={cards, events:evs.map(e=>[e.id,e.date.slice(0,10),e.name.replace(/^Legacy /,""),e.players,e.rounds]),
+      decks:ok.map(g=>[g.e.id,g.s.rank,g.s.player,g.s.archetype,g.s.record,pack(g.d.mainboard),pack(g.d.sideboard),g.m.map(m=>[m.round,m.opponent,m.opponent_archetype||"",m.result==="win"?"W":m.result==="loss"?"L":"D",String(m.record).replace(/-0$/,"")]),0])};
+    DB=normalize(raw,{generated:new Date().toISOString(),window:[from,to],rx:rxs});
+    state.on=new Set(DB.variants); state.open.clear(); setupPeriod(); renderAll();
+    st.textContent=`Loaded ${ok.length} decks from ${evs.length} events.`;
+  }catch(e){ st.className="err"; st.textContent=(e instanceof TypeError)?"Couldn't reach the Videre API from here. Download this page and open it in your browser to load live data.":"Error: "+e.message; }
+  finally{ $("#loadBtn").disabled=false; }
+}
+
+/* ---------- views ---------- */
+const VIEWS=["overview","trends","variants","players","decklists"];
+const VIEW_DEFAULTS = { overview:{cut:8, preset:"3"} };
+const defaultsFor = v => VIEW_DEFAULTS[v] || {cut:32, preset:"3"};
+function applyFilterDefaults(v){
+  const d=defaultsFor(v);
+  state.cut=d.cut; document.querySelectorAll("#cutSeg button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.c===String(d.cut)));
+  setPreset(d.preset); state.open.clear();
+  state.grain="week"; document.querySelectorAll("#grainSeg button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.g==="week"));
+}
+const PAGE_SUB = {
+  home: ()=>`Storm results from MTGO Legacy Challenges, tracked weekly.<br><span class="daterange">${state.wkRange||""}</span>`,
+  hub: ()=>`Storm results from MTGO Legacy Challenges, tracked weekly.<br><span class="daterange">Pick a period, then a section</span>`
+};
+function showPage(route){
+  route=(route||"").replace(/^#/,"");
+  const page = (route==="week"||route==="home") ? "home" : VIEWS.includes(route) ? "detail" : "hub";
+  state.page=page;
+  document.body.classList.remove("p-home","p-hub","p-detail"); document.body.classList.add("p-"+page);
+  if(page==="detail"){ showView(route,false); renderAll(); }
+  else { closeDDs(); if(page==="hub") renderHub(); else renderWeek(); $("#subtitle").innerHTML=PAGE_SUB[page](); }
+  window.scrollTo({top:0});
+}
+function showView(v, push){
+  if(!VIEWS.includes(v)) v="overview";
+  state.view=v; $("#viewName").textContent={overview:"Over time",trends:"Who beat Storm",variants:"By variant",players:"Players",decklists:"Decklists"}[v];
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on", s.dataset.view===v));
+  $("#tiles").hidden = v!=="overview";
+  $("#cutGroup").style.display = (v==="variants"||v==="players"||v==="trends") ? "none" : "";
+  if((v==="variants"||v==="trends") && state.cut!==32){ state.cut=32; document.querySelectorAll("#cutSeg button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.c==="32")); state.view=v; renderAll(); }
+  $("#grainGroup").style.display = v==="overview" ? "" : "none";
+  if(v==="overview"){ chartStack(); chartsSecondary(); }
+  if(push){ try{ history.replaceState(null,"","#"+v); }catch(_){ location.hash=v; } }
+}
+
+/* ---------- wiring ---------- */
+DB=normalize(RAW,META); state.on=new Set(DB.variants); setupPeriod();
+function customMonths(from,to){ setPreset(null); setMonthRange(from,to); $("#fromSel").value=from; $("#toSel").value=to; renderAll(); }
+$("#fromSel").onchange=e=>{ let f=e.target.value, t=state.to; if(f>t) t=f; customMonths(f,t); };
+$("#toSel").onchange=e=>{ let t=e.target.value, f=state.from; if(t<f) f=t; customMonths(f,t); };
+document.querySelectorAll("#presetSeg button").forEach(b=>b.onclick=()=>{ setPreset(b.dataset.p); renderAll(); });
+document.querySelectorAll("#grainSeg button").forEach(b=>b.onclick=()=>{ closeDDs(); state.grain=b.dataset.g; document.querySelectorAll("#grainSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b)); chartStack(); chartsSecondary(); renderFilters(); });
+document.querySelectorAll("#cutSeg button").forEach(b=>b.onclick=()=>{ closeDDs(); state.cut=+b.dataset.c; document.querySelectorAll("#cutSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b)); state.open.clear(); renderAll(); });
+$("#sortSel").onchange=e=>{ state.sort=e.target.value; renderDecks(); };
+$("#dFrom").value=META.window[0]; $("#dTo").value=META.window[1]; $("#loadBtn").onclick=loadLive;
+const tip=$("#tip");
+document.addEventListener("mouseover",e=>{ const t=e.target.closest("[data-tip]"); if(!t){ tip.style.display="none"; return; } tip.textContent=t.dataset.tip; tip.style.display="block"; });
+document.addEventListener("mousemove",e=>{ if(tip.style.display==="block"){ const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8); const y=e.clientY+16+tip.offsetHeight>innerHeight? e.clientY-tip.offsetHeight-10 : e.clientY+16; tip.style.left=x+"px"; tip.style.top=y+"px"; } });
+let rz; addEventListener("resize",()=>{ clearTimeout(rz); rz=setTimeout(()=>{ document.body.classList.add("noanim"); chartStack(); chartsSecondary(); requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove("noanim"))); },150); });
+function closeDDs(except){ document.querySelectorAll(".dd").forEach(d=>{ if(d===except) return; const b=d.querySelector(".ddb"), p=d.querySelector(".ddp"); b.setAttribute("aria-expanded","false"); p.hidden=true; }); }
+function setDrawer(){ closeDDs(); }
+document.querySelectorAll(".dd").forEach(d=>{ const b=d.querySelector(".ddb"), p=d.querySelector(".ddp");
+  b.onclick=e=>{ e.stopPropagation(); const open=p.hidden; closeDDs(d); p.hidden=!open; b.setAttribute("aria-expanded",open);
+    if(open){ p.style.left=""; const r=p.getBoundingClientRect(); let dx=0; if(r.right>innerWidth-8) dx=innerWidth-8-r.right; if(r.left+dx<8) dx=8-r.left; if(dx) p.style.left=dx+"px"; const inp=p.querySelector("input[type=search]"); if(inp) setTimeout(()=>inp.focus(),30); } };
+  p.addEventListener("click",e=>e.stopPropagation()); });
+document.addEventListener("click",()=>closeDDs());
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ if(!$("#deckModal").hidden) closeDeck(); else setDrawer(false); } });
+$("#dmBack").onclick=closeDeck;
+const pIn=$("#pInput"), pSug=$("#pSug");
+function playerPool(){ const c={}; DB.decks.filter(d=>d.rank<=state.cut && inPeriod(d.ev.date) && state.on.has(d.variant)).forEach(d=>c[d.player]=(c[d.player]||0)+1); return c; }
+function showSug(){
+  const q=pIn.value.trim().toLowerCase(), pool=playerPool();
+  const list=Object.entries(pool).filter(([n])=>!state.players.has(n) && (!q || n.toLowerCase().includes(q))).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,8);
+  if(!list.length){ pSug.innerHTML=`<div class="psug-empty">${q?"No matching players":"No players"}</div>`; pSug.hidden=false; return; }
+  pSug.innerHTML=list.map(([n,c],i)=>`<button class="psug-row${i===0?" act":""}" data-p="${esc(n)}"><span>${esc(n)}</span><span class="n">${c}</span></button>`).join("");
+  pSug.hidden=false;
+  pSug.querySelectorAll(".psug-row").forEach(b=>b.onmousedown=e=>{ e.preventDefault(); addPlayer(b.dataset.p); });
+}
+function addPlayer(n){ state.players.add(n); pIn.value=""; pSug.hidden=true; renderAll(); pIn.focus(); }
+pIn.addEventListener("input",showSug);
+pIn.addEventListener("focus",showSug);
+pIn.addEventListener("blur",()=>setTimeout(()=>pSug.hidden=true,120));
+pIn.addEventListener("keydown",e=>{
+  const rows=[...pSug.querySelectorAll(".psug-row")], k=rows.findIndex(r=>r.classList.contains("act"));
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){ e.preventDefault(); if(!rows.length) return; const nk=(k+(e.key==="ArrowDown"?1:-1)+rows.length)%rows.length; rows.forEach((r,i)=>r.classList.toggle("act",i===nk)); }
+  else if(e.key==="Enter"){ e.preventDefault(); const r=rows[k>=0?k:0]; if(r) addPlayer(r.dataset.p); }
+  else if(e.key==="Escape"){ pSug.hidden=true; e.stopPropagation(); }
+  else if(e.key==="Backspace" && !pIn.value && state.players.size){ const last=[...state.players].pop(); state.players.delete(last); renderAll(); }
+});
+document.querySelectorAll("#hubSeg button").forEach(b=>b.onclick=()=>{ state.hubPreset=b.dataset.p; const g=$("#hubGrid"); g.classList.remove("swap"); void g.offsetWidth; renderHub(); });
+$("#wkPrev").onclick=()=>{ state.wk--; renderWeek(); };
+$("#wkNext").onclick=()=>{ state.wk++; renderWeek(); };
+$("#resetBtn").onclick=()=>{ const dc=defaultsFor(state.view||"overview").cut; state.cut=dc; document.querySelectorAll("#cutSeg button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.c===String(dc))); state.open.clear(); state.on=new Set(DB.variants); state.players.clear(); state.grain="week"; document.querySelectorAll("#grainSeg button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.g==="week")); renderAll(); };
+function go(route){ if(state.page!=="detail" && VIEWS.includes(route)){ state.view=route; applyFilterDefaults(route); if(state.page==="hub"){ setPreset(String(state.hubPreset||"3")); } renderAll(); } showPage(route); try{ history.replaceState(null,"","#"+route); }catch(_){} }
+document.addEventListener("click",e=>{ const a=e.target.closest('a[href^="#"]'); if(!a) return; const r=a.getAttribute("href").slice(1); if(r!=="home" && r!=="week" && r!=="explore" && !VIEWS.includes(r)) return; e.preventDefault(); go(r); });
+addEventListener("hashchange",()=>showPage(location.hash.slice(1)));
+renderAll();
+showPage(location.hash.slice(1));
+</script>
+</body>
+</html>

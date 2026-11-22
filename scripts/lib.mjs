@@ -42,12 +42,14 @@ export function stormEntry(standing, deck) {
   return null;
 }
 
-export async function update({ data, fieldBase, fieldEvents, fetchJson, today, log = () => {}, lookbackDays = 3 }) {
+export async function update({ data, fieldBase, fieldEvents, fetchJson, today, log = () => {}, scanDays = 21, refreshDays = 4 }) {
   const baseCutoff = fieldBase.cutoff;                 // events on/before this date live in fieldBase
-  const videreDates = data.events.filter(e => e[0] > 0).map(e => e[1]).sort();
-  const lastDate = videreDates[videreDates.length - 1] || baseCutoff;
-  let from = addDays(lastDate, -lookbackDays);
+  // Scan a fixed window back from today: Videre sometimes adds a Challenge days late,
+  // so events are found by "not seen yet" rather than "newer than the last one we have".
+  let from = addDays(today, -scanDays);
   if (from <= baseCutoff) from = addDays(baseCutoff, 1);
+  const known = new Set(data.events.map(e => e[0]));
+  const refreshFrom = addDays(today, -refreshDays);  // recent events are re-fetched for late decklists
   const to = addDays(today, 1);
   if (from > to) { log("Nothing to do"); return { changed: false, data, fieldEvents }; }
 
@@ -59,8 +61,9 @@ export async function update({ data, fieldBase, fieldEvents, fetchJson, today, l
     if (!j.meta || !j.meta.has_more) break;
     offset = j.meta.next_offset;
   }
-  const challenges = evs.filter(e => /challenge/i.test(e.name) && e.date.slice(0, 10) > baseCutoff);
-  log(`${challenges.length} Challenge(s) between ${from} and ${to}`);
+  const challenges = evs.filter(e => /challenge/i.test(e.name) && e.date.slice(0, 10) > baseCutoff)
+    .filter(e => !known.has(e.id) || e.date.slice(0, 10) >= refreshFrom);
+  log(`${evs.length} Challenge(s) in Videre between ${from} and ${to}; ${challenges.length} new or recent to (re)process`);
 
   const cardIdx = new Map(data.cards.map((c, i) => [c[0], i]));
   const archIdx = new Map(data.arch.map((a, i) => [a, i]));

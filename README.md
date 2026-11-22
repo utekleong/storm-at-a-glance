@@ -7,7 +7,7 @@ Storm results from MTGO Legacy Challenges, tracked weekly. A static site built f
 - `data/storm32.json`: every Storm Top 32 finish (events, decklists, match paths).
 - `data/field_base.json`: monthly Top 32 field counts up to `cutoff`; `data/field_events.json`: per-Challenge field counts added after that.
 - `site/template.html`: the page. `__DATA__` and `__FIELD__` are filled in at build time.
-- `scripts/update.mjs`: fetches new Challenges from the Videre API and adds any Storm Top 32s. It re-checks the last 3 days each run, so decklists Videre publishes late are picked up.
+- `scripts/update.mjs`: fetches new Challenges from the Videre API and adds any Storm Top 32s. Each run scans the last 3 weeks for Challenges it has not seen yet (Videre sometimes adds one days late) and re-checks the last 4 days, so decklists published late are picked up.
 - `scripts/build.mjs`: writes `dist/index.html`.
 
 The GitHub Action in `.github/workflows/update.yml` runs every 2 hours (and on demand from the Actions tab). It updates the data, commits it, builds the page and deploys it to GitHub Pages. A push to `main` rebuilds and redeploys without fetching.

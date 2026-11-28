@@ -24,7 +24,9 @@ const fieldBase = await read("data/field_base.json");
 const fieldEvents = await read("data/field_events.json");
 const today = new Date().toISOString().slice(0, 10);
 
-const res = await update({ data, fieldBase, fieldEvents, fetchJson, today, log: console.log });
+// REPROCESS="id,id" re-fetches specific events (within the scan window), e.g. after a rule change.
+const reprocess = (process.env.REPROCESS || "").split(/[ ,]+/).filter(Boolean).map(Number);
+const res = await update({ data, fieldBase, fieldEvents, fetchJson, today, log: console.log, reprocess });
 if (res.changed) {
   await write("data/storm32.json", res.data);
   await write("data/field_events.json", res.fieldEvents);

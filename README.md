@@ -24,7 +24,8 @@ node scripts/build.mjs    # build dist/index.html
 - Videre archetypes containing "storm", plus The EPIC Gamble, ANT, Necrodominance and Riddlesmith Combo.
 - Unlabelled lists are classified from the decklist (shown as *inferred*).
 - Necrodominance Storm: 3+ Necrodominance and Beseech the Mirror, whatever the label.
-- Riddlesmith Combo: Videre's label, plus any Killabee list with Echo of Eons and Lion's Eye Diamond.
+- Mission Storm: Anthropological Mission + Gamble + Echo of Eons, whatever the label.
+- Riddlesmith Combo: Videre's label, plus any other Killabee list with Echo of Eons and Lion's Eye Diamond.
 - The page also reclassifies EPIC/Beseech lists with Infernal Tutor + Urza's Saga + Ad Nauseam as Saga Storm, and Ad Nauseam + Past in Flames without Beseech the Mirror as ANT.
 
 Results from Challenges missing in Videre were added by hand from the Legacy Data Collection Project and are not updated automatically.

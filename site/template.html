@@ -13,7 +13,7 @@
   --text:#121211; --text-2:#55544f; --muted:#8a8880;
   --accent:#6250d6; --accent-soft:#ebe8fb;
   --win:#008300; --loss:#c43a39;
-  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948; --s9:#a8329e;
 }
 @media (prefers-color-scheme: dark){
   :root:where(:not([data-theme="light"])){
@@ -22,7 +22,7 @@
     --text:#f0efec; --text-2:#c3c2b7; --muted:#8d8c84;
     --accent:#9085e9; --accent-soft:#29254a;
     --win:#2fb52f; --loss:#e66767;
-    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c; --s7:#9085e9; --s8:#e66767;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c; --s7:#9085e9; --s8:#e66767; --s9:#a8329e;
   }
 }
 :root[data-theme="dark"]{
@@ -31,7 +31,7 @@
   --text:#f0efec; --text-2:#c3c2b7; --muted:#8d8c84;
   --accent:#9085e9; --accent-soft:#29254a;
   --win:#2fb52f; --loss:#e66767;
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c; --s7:#9085e9; --s8:#e66767;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c; --s7:#9085e9; --s8:#e66767; --s9:#a8329e;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
@@ -579,8 +579,9 @@ const META = {generated:"2026-11-16T18:00:00Z", window:["2026-01-01","2026-11-16
 const TYPE_NAMES = {Cr:"Creature",In:"Instant",So:"Sorcery",Ar:"Artifact",En:"Enchantment",Pl:"Planeswalker",La:"Land",Ot:"Other"};
 const TYPE_ORDER = ["Cr","In","So","Ar","En","Pl","La","Ot"];
 const API = "https://api.videreproject.com";
-const SLOT_ORDER = ["The EPIC Storm","Saga Storm","Beseech Storm","ANT","Ruby Storm","The EPIC Gamble","Riddlesmith Combo","Necrodominance Storm"];
+const SLOT_ORDER = ["The EPIC Storm","Saga Storm","Beseech Storm","ANT","Ruby Storm","The EPIC Gamble","Riddlesmith Combo","Necrodominance Storm","Mission Storm"];
 const RIDDLE="Riddlesmith Combo";
+const MISSION="Mission Storm";
 const NECRO="Necrodominance Storm";
 
 let DB; // normalized
@@ -601,6 +602,9 @@ function normalize(raw, meta){
   decks.forEach(d=>{
     if(/necrodominance/i.test(d.variant||"")) d.variant=NECRO;
     if(/riddlesmith/i.test(d.variant||"")) d.variant=RIDDLE;
+    if(/mission storm/i.test(d.variant||"")) d.variant=MISSION;
+    if(d.variant!==MISSION && hasC(d,"Anthropological Mission") && hasC(d,"Gamble") && hasC(d,"Echo of Eons")){ if(d.variant){ d.videreLabel=d.variant; d.why="runs Anthropological Mission, Gamble and Echo of Eons"; } else d.inferred=true; d.variant=MISSION; return; }
+    if(d.variant===MISSION) return;
     if(/^killabee$/i.test(d.player) && d.variant!==RIDDLE && hasC(d,"Echo of Eons") && hasC(d,"Lion's Eye Diamond")){ d.videreLabel=d.variant; d.why="Killabee list with Echo of Eons and Lion's Eye Diamond"; d.variant=RIDDLE; return; }
     if(d.variant!==NECRO && qty(d,"Necrodominance")>=3 && hasC(d,"Beseech the Mirror")){ if(d.variant){ d.videreLabel=d.variant; d.why="runs 3+ Necrodominance and Beseech the Mirror"; } else d.inferred=true; d.variant=NECRO; }
     else if(d.variant===NECRO){}
@@ -610,7 +614,7 @@ function normalize(raw, meta){
   const variants = [...new Set(decks.map(d=>d.variant))].sort((a,b)=>{
     const ia=SLOT_ORDER.indexOf(a), ib=SLOT_ORDER.indexOf(b);
     return (ia<0?99:ia)-(ib<0?99:ib) || a.localeCompare(b); });
-  const color = {}; let k=0; variants.forEach(v=>{ color[v] = v===NECRO ? "var(--s8)" : `var(--s${Math.min(++k,7)})`; });
+  const color = {}; let k=0; variants.forEach(v=>{ color[v] = v===NECRO ? "var(--s8)" : v===MISSION ? "var(--s9)" : `var(--s${Math.min(++k,7)})`; });
   return {events:[...ev.values()], decks, variants, color, meta};
 }
 
@@ -760,7 +764,7 @@ function renderHub(){
   const pc={}; t8.filter(d=>d.rank<=8).forEach(d=>pc[d.player]=(pc[d.player]||0)+1);
   const tp=Object.entries(pc).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,3);
   // who beat storm: last 3 months, top 32
-  const isStormA=a=>/storm|epic gamble|ad nauseam tendrils|necrodominance|riddlesmith/i.test(a||"");
+  const isStormA=a=>/storm|epic gamble|ad nauseam tendrils|necrodominance|riddlesmith|mission storm/i.test(a||"");
   const lc={}; let lt=0; t8.forEach(d=>d.matches.filter(m=>m.res==="L").forEach(m=>{ lt++; const a=!m.arch?"Unlabelled":isStormA(m.arch)?"Storm (mirror)":m.arch; lc[a]=(lc[a]||0)+1; }));
   const tl=Object.entries(lc).filter(([a])=>a!=="Unlabelled").sort((a,b)=>b[1]-a[1]).slice(0,3);
   const withList=t8.filter(d=>d.mb.length), latest=all.map(d=>d.ev.date).sort().pop();
@@ -906,7 +910,7 @@ function trendMonths(){
 const monLbl=m=>MONTHS[+m.slice(5,7)-1];
 function renderTrends(){
   const d=sel().filter(x=>x.matches.length);
-  const isStormA=a=>/storm|epic gamble|ad nauseam tendrils|necrodominance|riddlesmith/i.test(a||"");
+  const isStormA=a=>/storm|epic gamble|ad nauseam tendrils|necrodominance|riddlesmith|mission storm/i.test(a||"");
   const norm=a=>!a?"Unlabelled":isStormA(a)?"Storm (mirror)":a;
   const ms=trendMonths(), mIdx=Object.fromEntries(ms.map((m,i)=>[m[0],i]));
   const L={}; let total=0, played=0;
@@ -1010,8 +1014,8 @@ function renderAll(){
   if(state.page==="detail") $("#subtitle").innerHTML=`<span class="daterange">${fmtDate(first)} – ${fmtDateY(last)}</span>`;
   renderFilters(); renderTiles(); renderWeek(); chartStack(); chartsSecondary(); renderVariantTable(); renderPilots(); renderTrends(); renderDecks();
   $("#foot").innerHTML=`<ul class="rules">
-    <li><b>Storm</b> = Videre archetypes containing “${esc(DB.meta.rx)}”, plus The EPIC Gamble, ANT, Riddlesmith Combo and Necrodominance Storm. Doomsday and Oops! All Spells aren’t counted.</li>
-    <li><b>Saga Storm</b> includes EPIC or Beseech lists running Infernal Tutor, Urza’s Saga and Ad Nauseam. <b>ANT</b> includes any list running Ad Nauseam and Past in Flames without Beseech the Mirror. <b>Necrodominance Storm</b> is Videre’s “Necrodominance Combo” plus any list with 3+ Necrodominance and Beseech the Mirror; Storm lists running a single Necrodominance keep their variant. <b>Riddlesmith Combo</b> is Videre’s “Riddlesmith Combo” plus any Killabee list with Echo of Eons and Lion’s Eye Diamond. All marked <i>reclassified</i> when the label changed.</li>
+    <li><b>Storm</b> = Videre archetypes containing “${esc(DB.meta.rx)}”, plus The EPIC Gamble, ANT, Riddlesmith Combo, Mission Storm and Necrodominance Storm. Doomsday and Oops! All Spells aren’t counted.</li>
+    <li><b>Saga Storm</b> includes EPIC or Beseech lists running Infernal Tutor, Urza’s Saga and Ad Nauseam. <b>ANT</b> includes any list running Ad Nauseam and Past in Flames without Beseech the Mirror. <b>Necrodominance Storm</b> is Videre’s “Necrodominance Combo” plus any list with 3+ Necrodominance and Beseech the Mirror; Storm lists running a single Necrodominance keep their variant. <b>Riddlesmith Combo</b> is Videre’s “Riddlesmith Combo” plus any other Killabee list with Echo of Eons and Lion’s Eye Diamond. <b>Mission Storm</b> is any list with Anthropological Mission, Gamble and Echo of Eons, whatever its label. All marked <i>reclassified</i> when the label changed.</li>
     <li><i>inferred</i>: unlabelled in Videre, classified from the list. <i>relabelled</i>: Storm per the cross-check source.${nSheet?` <i>sheet only</i>: from a Challenge Videre lacks; no decklist.`:""}</li>
     ${nSheet?`<li>${nSheet} Challenges missing from Videre were added from the cross-check and count toward slots.</li>`:""}
   </ul>`;
@@ -1034,7 +1038,7 @@ async function loadLive(){
     const evs=(await getAll(`/events?format=legacy&kind=challenge&min_date=${from}&max_date=${maxD}`)).filter(e=>/challenge/i.test(e.name));
     let done=0;
     const stds=await pool(evs,5,async e=>{ const j=await getJSON(`/standings?format=legacy&event_id=${e.id}&limit=32`); st.textContent=`Standings ${++done}/${evs.length}`; return j.data||[]; });
-    const picks=[]; evs.forEach((e,i)=>(stds[i]||[]).filter(s=>s.rank<=32&&(rx.test(s.archetype||"")||/necrodominance|riddlesmith/i.test(s.archetype||"")||/^killabee$/i.test(s.player))).forEach(s=>picks.push({e,s})));
+    const picks=[]; evs.forEach((e,i)=>(stds[i]||[]).filter(s=>s.rank<=32&&(rx.test(s.archetype||"")||/necrodominance|riddlesmith|mission storm/i.test(s.archetype||"")||/^killabee$/i.test(s.player)||/mission/i.test(s.archetype||""))).forEach(s=>picks.push({e,s})));
     done=0;
     const got=await pool(picks,4,async({e,s})=>{
       const [dl,ml]=await Promise.all([getJSON(`/decks?format=legacy&event_id=${e.id}&player=${encodeURIComponent(s.player)}&limit=10`), getJSON(`/matches?format=legacy&event_id=${e.id}&player=${encodeURIComponent(s.player)}&limit=50`)]);

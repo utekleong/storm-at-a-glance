@@ -4,7 +4,7 @@
 export const API = "https://api.videreproject.com";
 
 // Archetype labels that count as Storm (the page renames/merges some of these).
-export const STORM_RX = /storm|epic gamble|ad nauseam tendrils|necrodominance|riddlesmith/i;
+export const STORM_RX = /storm|epic gamble|ad nauseam tendrils|necrodominance|riddlesmith|mission storm/i;
 
 const CLS = l => {
   for (const [k, c] of [["Land","La"],["Creature","Cr"],["Planeswalker","Pl"],["Instant","In"],["Sorcery","So"],["Artifact","Ar"],["Enchantment","En"]])
@@ -19,6 +19,7 @@ const has = (list, name) => qty(list, name) > 0;
 
 // Variant for a decklist when Videre gave no label. Mirrors the page's rules.
 export function inferVariant(mb) {
+  if (has(mb, "Anthropological Mission") && has(mb, "Gamble") && has(mb, "Echo of Eons")) return "Mission Storm";
   if (qty(mb, "Necrodominance") >= 3 && has(mb, "Beseech the Mirror")) return "Necrodominance Storm";
   if (has(mb, "Infernal Tutor") && has(mb, "Urza's Saga") && has(mb, "Ad Nauseam")) return "Saga Storm";
   if (has(mb, "Ad Nauseam") && has(mb, "Past in Flames") && !has(mb, "Beseech the Mirror")) return "ANT";
@@ -34,6 +35,8 @@ export function stormEntry(standing, deck) {
   const label = standing.archetype || "";
   const mb = deck ? deck.mainboard || [] : [];
   if (STORM_RX.test(label)) return { variant: label, flag: 0 };
+  // Mission Storm: Anthropological Mission + Gamble + Echo of Eons, whatever the label.
+  if (has(mb, "Anthropological Mission") && has(mb, "Gamble") && has(mb, "Echo of Eons")) return { variant: label || "Mission Storm", flag: label ? 0 : 1 };
   // Player-specific rule: Killabee's Echo of Eons + Lion's Eye Diamond lists are Riddlesmith Combo.
   if (/^killabee$/i.test(standing.player) && has(mb, "Echo of Eons") && has(mb, "Lion's Eye Diamond")) return { variant: label || "Riddlesmith Combo", flag: label ? 0 : 1 };
   // Necrodominance Storm, whatever the label.
@@ -42,7 +45,7 @@ export function stormEntry(standing, deck) {
   return null;
 }
 
-export async function update({ data, fieldBase, fieldEvents, fetchJson, today, log = () => {}, scanDays = 21, refreshDays = 4 }) {
+export async function update({ data, fieldBase, fieldEvents, fetchJson, today, log = () => {}, scanDays = 21, refreshDays = 4, reprocess = [] }) {
   const baseCutoff = fieldBase.cutoff;                 // events on/before this date live in fieldBase
   // Scan a fixed window back from today: Videre sometimes adds a Challenge days late,
   // so events are found by "not seen yet" rather than "newer than the last one we have".
@@ -62,7 +65,7 @@ export async function update({ data, fieldBase, fieldEvents, fetchJson, today, l
     offset = j.meta.next_offset;
   }
   const challenges = evs.filter(e => /challenge/i.test(e.name) && e.date.slice(0, 10) > baseCutoff)
-    .filter(e => !known.has(e.id) || e.date.slice(0, 10) >= refreshFrom);
+    .filter(e => !known.has(e.id) || e.date.slice(0, 10) >= refreshFrom || reprocess.includes(e.id));
   log(`${evs.length} Challenge(s) in Videre between ${from} and ${to}; ${challenges.length} new or recent to (re)process`);
 
   const cardIdx = new Map(data.cards.map((c, i) => [c[0], i]));

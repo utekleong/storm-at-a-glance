@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "17 */2 * * *"   # every 2 hours; picks up each Challenge once Videre has it
   workflow_dispatch:
+    inputs:
+      reprocess:
+        description: "Event ids to re-fetch (comma-separated, last 3 weeks only)"
+        required: false
+        default: ""
   push:
     branches: [main]
 
@@ -28,6 +33,8 @@ jobs:
       - name: Fetch new Challenges from Videre
         if: github.event_name != 'push'
         run: node scripts/update.mjs
+        env:
+          REPROCESS: ${{ github.event.inputs.reprocess }}
 
       - name: Commit updated data
         if: github.event_name != 'push'

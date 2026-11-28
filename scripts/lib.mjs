@@ -88,8 +88,13 @@ export async function update({ data, fieldBase, fieldEvents, fetchJson, today, l
     const deckOf = s => decks.find(x => x.id === s.deck_id) || decks.find(x => x.player === s.player) || null;
 
     // Replace anything we had for this event (Videre fills in lists over time).
-    data.decks = data.decks.filter(x => x[0] !== e.id);
-    data.events = data.events.filter(x => x[0] !== e.id);
+    // A Challenge added by hand from the Legacy Data Collection Project (negative id) is
+    // replaced once Videre publishes the same event (same date and name).
+    const nm = e.name.replace(/^Legacy /, "");
+    const dupes = new Set(data.events.filter(x => x[0] < 0 && x[1] === d && x[2] === nm).map(x => x[0]));
+    if (dupes.size) log(`  ${d} ${nm}: replacing hand-added sheet result`);
+    data.decks = data.decks.filter(x => x[0] !== e.id && !dupes.has(x[0]));
+    data.events = data.events.filter(x => x[0] !== e.id && !dupes.has(x[0]));
     data.events.push([e.id, d, e.name.replace(/^Legacy /, ""), e.players, e.rounds]);
 
     const top = st.filter(s => s.rank <= 32), n = top.length;
